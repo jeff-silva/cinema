@@ -275,10 +275,10 @@
     <!-- ============================================================= -->
     <!-- VERSÃO DESKTOP (Suíte de Edição Minimalista baseada no Print)  -->
     <!-- ============================================================= -->
-    <div class="hidden md:flex flex-col h-screen justify-between p-6 lg:p-8 max-w-7xl mx-auto w-full">
+    <div class="hidden md:flex flex-col min-h-screen justify-between p-6 lg:p-8 w-full">
       
       <!-- Topo: Título à esquerda & Menu em colchetes com [ Início ] à direita -->
-      <header class="flex items-center justify-between font-screenplay text-sm lg:text-base tracking-wider shrink-0 pb-3">
+      <header class="flex items-center justify-between font-screenplay text-sm lg:text-base tracking-wider shrink-0 pb-3 w-full">
         <a href="#" @click.prevent="navigate('inicio')" class="text-white font-bold hover:text-primary transition-colors flex items-center gap-2">
           <span>Jeferson Silva - Edição</span>
         </a>
@@ -288,38 +288,39 @@
           <button 
             @click="navigate('inicio')" 
             :class="activeTab === 'inicio' ? 'text-primary font-bold' : 'hover:text-white'"
-            class="transition-colors px-1"
+            class="transition-colors px-1 cursor-pointer"
           >
             [ Início ]
           </button>
           <button 
             @click="navigate('sobre')" 
             :class="activeTab === 'sobre' ? 'text-primary font-bold' : 'hover:text-white'"
-            class="transition-colors px-1"
+            class="transition-colors px-1 cursor-pointer"
           >
             [ Sobre ]
           </button>
           <button 
             @click="navigate('projetos')" 
             :class="activeTab === 'projetos' ? 'text-primary font-bold' : 'hover:text-white'"
-            class="transition-colors px-1"
+            class="transition-colors px-1 cursor-pointer"
           >
             [ Projetos ]
           </button>
           <button 
             @click="navigate('contato')" 
             :class="activeTab === 'contato' ? 'text-primary font-bold' : 'hover:text-white'"
-            class="transition-colors px-1"
+            class="transition-colors px-1 cursor-pointer"
           >
             [ Contato ]
           </button>
         </nav>
       </header>
 
-      <!-- Frame Central: A Tela / Monitor de Exibição Cinematográfico (Fundo Preto Absoluto) -->
-      <main class="flex-1 my-2 bg-black relative overflow-hidden flex flex-col justify-center items-center border border-zinc-900">
-        
-        <transition name="fade-cinema" mode="out-in">
+      <!-- Frame Central: Sempre Proporção 16:9 Estrita e 100% de Largura da Tela -->
+      <div class="w-full my-auto py-2 flex items-center justify-center">
+        <main class="w-full aspect-video bg-black relative overflow-hidden flex flex-col justify-center items-center border border-zinc-900 shadow-2xl">
+          
+          <transition name="fade-cinema" mode="out-in">
           
           <!-- SEÇÃO 01: INÍCIO (TITLE CARD PURO DE FILME COM EFEITO VHS RETRÔ) -->
           <div 
@@ -428,13 +429,13 @@
                   </button>
                 </div>
 
-                <!-- Metadados de Cena estilo Slugline -->
+                <!-- Metadados de Cena no Still -->
                 <div class="absolute top-10 lg:top-14 left-6 z-10 font-screenplay text-xs text-white bg-black/85 px-3 py-1.5 border border-zinc-800">
-                  <span class="text-primary font-bold">CENA 0{{ currentProjectIndex + 1 }}:</span> {{ currentProject.sceneSlug }}
+                  <span class="text-primary font-bold">CENA 0{{ currentProjectIndex + 1 }}:</span> {{ currentProject.title }}
                 </div>
 
                 <div class="absolute top-10 lg:top-14 right-6 z-10 font-mono text-xs text-zinc-400 bg-black/85 px-3 py-1.5 border border-zinc-800">
-                  {{ currentProject.format }} • {{ currentProject.duration }}
+                  {{ currentProject.year }}
                 </div>
               </div>
 
@@ -459,7 +460,7 @@
             <div class="h-20 bg-[#111317] border-t border-zinc-800 px-6 py-2 flex flex-col justify-between shrink-0 font-screenplay text-xs">
               <div class="flex items-center justify-between">
                 <span class="text-white font-bold tracking-wider uppercase">{{ currentProject.title }}</span>
-                <span class="text-zinc-400 font-mono text-[11px]">{{ currentProject.role }} // {{ currentProject.software }}</span>
+                <span class="text-zinc-400 font-mono text-[11px]">{{ currentProject.year }}</span>
               </div>
 
               <!-- Clipes na Linha de Tempo -->
@@ -473,7 +474,7 @@
                     ? 'bg-primary text-white border-primary font-bold shadow' 
                     : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-600'"
                 >
-                  <span class="truncate">0{{ idx + 1 }}. {{ p.shortTitle }}</span>
+                  <span class="truncate">0{{ idx + 1 }}. {{ p.title }}</span>
                   <span class="text-[9px] opacity-70 ml-1">{{ p.year }}</span>
                 </button>
               </div>
@@ -616,7 +617,8 @@
 
         </transition>
 
-      </main>
+        </main>
+      </div>
 
       <!-- Rodapé Desktop Fiel ao Print: Timecode à esquerda & Direitos reservados à direita -->
       <footer class="flex items-center justify-between font-screenplay text-xs lg:text-sm text-zinc-400 shrink-0 pt-3">
@@ -767,7 +769,7 @@
                 <i class="fa-brands fa-youtube text-primary text-sm"></i>
                 <span>Abrir no YouTube</span>
               </a>
-              <span class="text-zinc-500 font-mono">{{ item.duration }}</span>
+              <span class="text-zinc-500 font-mono">{{ item.year }}</span>
             </div>
           </div>
 
@@ -781,7 +783,7 @@
                 CENA 0{{ idx + 1 }}
               </span>
               <span class="bg-black/80 border border-zinc-800 px-2.5 py-1 text-zinc-400 font-mono">
-                {{ item.duration }}
+                {{ item.year }}
               </span>
             </div>
 
@@ -797,18 +799,11 @@
             </div>
 
             <!-- Rodapé do Slide -->
-            <div class="relative z-10 pb-16 space-y-2 font-screenplay">
+            <div class="relative z-10 pb-16 space-y-1 font-screenplay">
               <span class="text-primary text-[10px] uppercase tracking-wider block font-bold">
-                {{ item.categoryLabel }} • {{ item.year }}
+                {{ item.year }}
               </span>
-              <h3 class="text-xl font-bold uppercase text-white">{{ item.title }}</h3>
-              <p class="text-zinc-300 text-xs line-clamp-2 leading-relaxed">
-                {{ item.description }}
-              </p>
-              <div class="flex items-center gap-2 pt-1 font-mono text-[10px] text-zinc-400">
-                <span class="border border-zinc-700 bg-black/80 px-2 py-0.5">{{ item.software }}</span>
-                <span class="border border-zinc-700 bg-black/80 px-2 py-0.5">{{ item.format }}</span>
-              </div>
+              <h3 class="text-2xl font-bold uppercase text-white">{{ item.title }}</h3>
             </div>
           </template>
         </div>
@@ -920,107 +915,58 @@
             {
               id: 1,
               title: 'Nostalgia',
-              shortTitle: 'Nostalgia',
-              sceneSlug: 'EXT. MEMÓRIAS & TEMPO - CORTE CONTÍNUO',
-              categoryLabel: 'Curta Autoral',
-              role: 'Montagem & Pós-produção',
+              slug: 'nostalgia',
               year: '2024',
-              duration: 'Curta-metragem',
               youtubeId: 'JkOR1eej2II',
-              image: 'https://img.youtube.com/vi/JkOR1eej2II/maxresdefault.jpg',
-              description: 'Obra autoral com ritmo reflexivo e decupagem cuidadosa, explorando memória afetiva, passagens de tempo e atmosfera cinematográfica.',
-              software: 'Premiere Pro',
-              format: 'FHD • 16:9'
+              image: 'https://img.youtube.com/vi/JkOR1eej2II/maxresdefault.jpg'
             },
             {
               id: 2,
               title: 'Efêmera',
-              shortTitle: 'Efêmera',
-              sceneSlug: 'INT. RITMO & DETALHES - TRANSIÇÃO',
-              categoryLabel: 'Curta Autoral',
-              role: 'Edição & Montagem',
+              slug: 'efemera',
               year: '2024',
-              duration: 'Curta-metragem',
               youtubeId: 'a1qUqTNKtYE',
-              image: 'https://img.youtube.com/vi/a1qUqTNKtYE/maxresdefault.jpg',
-              description: 'Construção narrativa baseada em sensações fugazes, cortes dinâmicos e sincronia fina entre trilha sonora e imagem.',
-              software: 'Premiere + After Effects',
-              format: 'FHD • 16:9'
+              image: 'https://img.youtube.com/vi/a1qUqTNKtYE/maxresdefault.jpg'
             },
             {
               id: 3,
               title: 'O Jogo dos Caçadores',
-              shortTitle: 'Caçadores',
-              sceneSlug: 'EXT. TENSÃO & CONFLITO - MONTAGEM PARALELA',
-              categoryLabel: 'Curta de Ficção',
-              role: 'Montagem & Decupagem',
+              slug: 'o-jogo-dos-cacadores',
               year: '2023',
-              duration: 'Ficção / Suspense',
               youtubeId: 'ZnRfCsd3Z7Y',
-              image: 'https://img.youtube.com/vi/ZnRfCsd3Z7Y/maxresdefault.jpg',
-              description: 'Narrativa de suspense com montagem paralela, timing de tensão progressiva e trabalho de pacing focado na antecipação do espectador.',
-              software: 'Adobe Premiere Pro',
-              format: '4K • 2.39:1'
+              image: 'https://img.youtube.com/vi/ZnRfCsd3Z7Y/maxresdefault.jpg'
             },
             {
               id: 4,
               title: 'Natureza Morta',
-              shortTitle: 'Nat. Morta',
-              sceneSlug: 'INT. CONTEMPLAÇÃO & TEXTURA - CORTE SECO',
-              categoryLabel: 'Curta Experimental',
-              role: 'Edição & Pós-produção',
+              slug: 'natureza-morta',
               year: '2023',
-              duration: 'Experimental',
               youtubeId: 'PeV4sFPK3Ng',
-              image: 'https://img.youtube.com/vi/PeV4sFPK3Ng/maxresdefault.jpg',
-              description: 'Exploração estética de formas, iluminação e texturas visuais. Ritmo cadenciado e valorização do silêncio e composição espacial.',
-              software: 'Premiere Pro',
-              format: 'FHD • 16:9'
+              image: 'https://img.youtube.com/vi/PeV4sFPK3Ng/maxresdefault.jpg'
             },
             {
               id: 5,
               title: 'Doce',
-              shortTitle: 'Doce',
-              sceneSlug: 'INT/EXT. NARRATIVA & CONTRASTES - CENA',
-              categoryLabel: 'Curta Autoral',
-              role: 'Edição & Finalização',
+              slug: 'doce',
               year: '2022',
-              duration: 'Curta-metragem',
               youtubeId: 'JMiOs47C8DE',
-              image: 'https://img.youtube.com/vi/JMiOs47C8DE/maxresdefault.jpg',
-              description: 'Projeto audiovisual com ênfase na dinâmica entre personagens, cortes reativos aos diálogos e desenho rítmico expressivo.',
-              software: 'Adobe Premiere Pro',
-              format: 'FHD • 16:9'
+              image: 'https://img.youtube.com/vi/JMiOs47C8DE/maxresdefault.jpg'
             },
             {
               id: 6,
               title: 'Destilando',
-              shortTitle: 'Destilando',
-              sceneSlug: 'INT. PROCESSO & MOVIMENTO - RITMO VISUAL',
-              categoryLabel: 'Produção Audiovisual',
-              role: 'Edição & Montagem',
+              slug: 'destilando',
               year: '2022',
-              duration: 'Curta / Dinâmico',
               youtubeId: '19-zPghLg00',
-              image: 'https://img.youtube.com/vi/19-zPghLg00/maxresdefault.jpg',
-              description: 'Edição rítmica acompanhando processos e movimento, alternando planos detalhe com planos gerais para imprimir dinamismo.',
-              software: 'Premiere + After Effects',
-              format: 'FHD • 16:9'
+              image: 'https://img.youtube.com/vi/19-zPghLg00/maxresdefault.jpg'
             },
             {
               id: 7,
               title: 'A Herdeira',
-              shortTitle: 'A Herdeira',
-              sceneSlug: 'INT. DRAMA & ENCRUZILHADA - CLÍMAX',
-              categoryLabel: 'Curta Dramático',
-              role: 'Montagem Cinematográfica',
+              slug: 'a-herdeira',
               year: '2021',
-              duration: 'Ficção Dramática',
               youtubeId: 'OBR85PPCEN8',
-              image: 'https://img.youtube.com/vi/OBR85PPCEN8/maxresdefault.jpg',
-              description: 'Trama dramática conduzida por atuação e subtexto, onde a montagem valoriza o olhar, as pausas e as decisões dos personagens.',
-              software: 'Adobe Premiere Pro',
-              format: 'FHD • 2.39:1'
+              image: 'https://img.youtube.com/vi/OBR85PPCEN8/maxresdefault.jpg'
             }
           ],
 
