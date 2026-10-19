@@ -3,7 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Jeferson Silva — Edição</title>
+  <title>Jeferson Silva — Edição & Montagem Cinematográfica | Belo Horizonte</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <!-- SEO Básico & Indexação -->
+  <meta name="description" content="Portfólio de Jeferson Silva: montador e editor de vídeo em Belo Horizonte - MG. Especializado em curtas-metragens, ficção, videoclipes, narrativas dinâmicas e pós-produção audiovisual com Adobe Premiere, After Effects e Remotion.">
+  <meta name="keywords" content="editor de vídeo, montador de cinema, montagem cinematográfica, edição de vídeo Belo Horizonte, pós-produção audiovisual, curtas-metragens, videoclipes, Premiere Pro, After Effects, Remotion, cinema Minas Gerais">
+  <meta name="author" content="Jeferson Silva">
+  <meta name="robots" content="index, follow">
+  <meta name="geo.region" content="BR-MG">
+  <meta name="geo.placename" content="Belo Horizonte">
+  <link rel="canonical" href="https://jeff-silva.github.io/cinema/">
+
+  <!-- Open Graph / Facebook / WhatsApp (Preview de compartilhamento) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jeff-silva.github.io/cinema/">
+  <meta property="og:title" content="Jeferson Silva — Edição & Montagem Cinematográfica">
+  <meta property="og:description" content="Montagem, decupagem e pós-produção para cinema, ficção, videoclipes e conteúdo autoral. Baseado em Belo Horizonte, Minas Gerais.">
+  <meta property="og:image" content="https://img.youtube.com/vi/JkOR1eej2II/maxresdefault.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="720">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:site_name" content="Jeferson Silva Cinema">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Jeferson Silva — Edição & Montagem Cinematográfica">
+  <meta name="twitter:description" content="Portfólio de montagem e pós-produção audiovisual em Belo Horizonte. Curtas, ficção e conteúdo dinâmico.">
+  <meta name="twitter:image" content="https://img.youtube.com/vi/JkOR1eej2II/maxresdefault.jpg">
+
+  <!-- Dados Estruturados Schema.org (JSON-LD) para Google Search -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://jeff-silva.github.io/cinema/#person",
+        "name": "Jeferson Silva",
+        "jobTitle": "Editor de Vídeo & Montador Cinematográfico",
+        "description": "Graduado em Cinema e Audiovisual / Produção Multimídia. Atua com montagem cinematográfica, decupagem dramática e pós-produção.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Belo Horizonte",
+          "addressRegion": "MG",
+          "addressCountry": "BR"
+        },
+        "knowsAbout": [
+          "Montagem Cinematográfica",
+          "Adobe Premiere Pro",
+          "Adobe After Effects",
+          "Remotion (React)",
+          "Edição de Vídeo",
+          "Pós-produção Audiovisual"
+        ],
+        "url": "https://jeff-silva.github.io/cinema/",
+        "sameAs": [
+          "https://www.youtube.com/@jefersonsilva7937"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://jeff-silva.github.io/cinema/#website",
+        "url": "https://jeff-silva.github.io/cinema/",
+        "name": "Jeferson Silva — Cinema & Audiovisual",
+        "description": "Portfólio oficial de edição e montagem cinematográfica de Jeferson Silva.",
+        "publisher": {
+          "@id": "https://jeff-silva.github.io/cinema/#person"
+        },
+        "inLanguage": "pt-BR"
+      }
+    ]
+  }
+  </script>
 
   <!-- Tipografia Autêntica de Roteiro de Cinema: Courier Prime & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -289,47 +361,95 @@
             key="projetos" 
             class="w-full h-full relative flex flex-col bg-black"
           >
-            <!-- Imagem do Plano / Take Atual -->
+            <!-- Monitor de Reprodução do Desktop -->
             <div class="relative flex-1 w-full overflow-hidden flex items-center justify-center bg-black">
-              <img 
-                :src="currentProject.image" 
-                :alt="currentProject.title"
-                class="w-full h-full object-cover opacity-85 transition-opacity duration-300"
-              />
               
-              <!-- Letterbox 2.39:1 -->
-              <div class="absolute inset-x-0 top-0 h-8 lg:h-12 bg-black/95 pointer-events-none border-b border-zinc-900"></div>
-              <div class="absolute inset-x-0 bottom-0 h-8 lg:h-12 bg-black/95 pointer-events-none border-t border-zinc-900"></div>
+              <!-- Se estiver reproduzindo: Iframe do YouTube Direto no Monitor -->
+              <div v-if="isPlayingVideo && currentProject.youtubeId" class="w-full h-full relative z-10 bg-black">
+                <iframe 
+                  :key="currentProject.youtubeId"
+                  :src="`https://www.youtube.com/embed/${currentProject.youtubeId}?autoplay=1&rel=0`" 
+                  :title="currentProject.title"
+                  class="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen
+                ></iframe>
 
-              <!-- Botão Central de Play -->
-              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <button 
-                  @click="openModal(currentProject)"
-                  class="pointer-events-auto w-16 h-16 bg-black/85 border border-primary text-white flex items-center justify-center hover:bg-primary transition-all duration-150 shadow-2xl"
-                >
-                  <i class="fa-solid fa-play text-xl ml-1 text-white"></i>
-                </button>
+                <!-- Barra Superior Flutuante Durante a Reprodução -->
+                <div class="absolute top-3 inset-x-4 z-20 flex items-center justify-between pointer-events-none">
+                  <div class="bg-black/90 px-3 py-1 border border-zinc-800 text-[11px] font-screenplay text-white flex items-center gap-2 pointer-events-auto">
+                    <span class="w-2 h-2 bg-primary animate-pulse"></span>
+                    <span class="font-bold uppercase">{{ currentProject.title }}</span>
+                  </div>
+
+                  <div class="flex items-center gap-2 pointer-events-auto">
+                    <a 
+                      :href="`https://www.youtube.com/watch?v=${currentProject.youtubeId}`" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      class="bg-black/90 hover:bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white px-2.5 py-1 text-[11px] font-screenplay flex items-center gap-1.5 transition-colors"
+                      title="Abrir no YouTube"
+                    >
+                      <i class="fa-brands fa-youtube text-primary"></i>
+                      <span>YouTube</span>
+                    </a>
+                    <button 
+                      @click="stopVideo"
+                      class="bg-black/90 hover:bg-primary border border-zinc-800 text-zinc-300 hover:text-white px-2.5 py-1 text-[11px] font-screenplay transition-colors"
+                      title="Voltar para a claquete"
+                    >
+                      [ Fechar Reprodução × ]
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              <!-- Metadados de Cena estilo Slugline -->
-              <div class="absolute top-10 lg:top-14 left-6 z-10 font-screenplay text-xs text-white bg-black/85 px-3 py-1.5 border border-zinc-800">
-                <span class="text-primary font-bold">CENA 0{{ currentProjectIndex + 1 }}:</span> {{ currentProject.sceneSlug }}
+              <!-- Se NÃO estiver reproduzindo: Imagem do Plano com Letterbox e Play -->
+              <div v-else class="relative w-full h-full flex items-center justify-center bg-black">
+                <img 
+                  :src="currentProject.image" 
+                  :alt="currentProject.title"
+                  class="w-full h-full object-cover opacity-85 transition-opacity duration-300"
+                />
+                
+                <!-- Letterbox 2.39:1 -->
+                <div class="absolute inset-x-0 top-0 h-8 lg:h-12 bg-black/95 pointer-events-none border-b border-zinc-900"></div>
+                <div class="absolute inset-x-0 bottom-0 h-8 lg:h-12 bg-black/95 pointer-events-none border-t border-zinc-900"></div>
+
+                <!-- Botão Central de Play no Monitor -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <button 
+                    @click="playProject(currentProjectIndex)"
+                    class="w-16 h-16 bg-black/85 border border-primary text-white flex items-center justify-center hover:bg-primary transition-all duration-150 shadow-2xl cursor-pointer"
+                    title="Reproduzir no monitor"
+                  >
+                    <i class="fa-solid fa-play text-xl ml-1 text-white"></i>
+                  </button>
+                </div>
+
+                <!-- Metadados de Cena estilo Slugline -->
+                <div class="absolute top-10 lg:top-14 left-6 z-10 font-screenplay text-xs text-white bg-black/85 px-3 py-1.5 border border-zinc-800">
+                  <span class="text-primary font-bold">CENA 0{{ currentProjectIndex + 1 }}:</span> {{ currentProject.sceneSlug }}
+                </div>
+
+                <div class="absolute top-10 lg:top-14 right-6 z-10 font-mono text-xs text-zinc-400 bg-black/85 px-3 py-1.5 border border-zinc-800">
+                  {{ currentProject.format }} • {{ currentProject.duration }}
+                </div>
               </div>
 
-              <div class="absolute top-10 lg:top-14 right-6 z-10 font-mono text-xs text-zinc-400 bg-black/85 px-3 py-1.5 border border-zinc-800">
-                {{ currentProject.format }} • {{ currentProject.duration }}
-              </div>
-
-              <!-- Setas de Navegação -->
+              <!-- Setas de Navegação Entre Cenas -->
               <button 
                 @click="prevProject"
-                class="absolute left-4 z-20 w-10 h-10 bg-black/80 hover:bg-primary text-white border border-zinc-700 flex items-center justify-center transition-colors"
+                class="absolute left-4 z-20 w-10 h-10 bg-black/80 hover:bg-primary text-white border border-zinc-700 flex items-center justify-center transition-colors cursor-pointer"
+                title="Cena anterior"
               >
                 <i class="fa-solid fa-chevron-left text-sm"></i>
               </button>
               <button 
                 @click="nextProject"
-                class="absolute right-4 z-20 w-10 h-10 bg-black/80 hover:bg-primary text-white border border-zinc-700 flex items-center justify-center transition-colors"
+                class="absolute right-4 z-20 w-10 h-10 bg-black/80 hover:bg-primary text-white border border-zinc-700 flex items-center justify-center transition-colors cursor-pointer"
+                title="Próxima cena"
               >
                 <i class="fa-solid fa-chevron-right text-sm"></i>
               </button>
@@ -347,8 +467,8 @@
                 <button 
                   v-for="(p, idx) in projects" 
                   :key="p.id"
-                  @click="currentProjectIndex = idx"
-                  class="flex-1 min-w-[120px] h-6 text-[10px] font-mono px-2.5 flex items-center justify-between border transition-all text-left truncate shrink-0"
+                  @click="selectProject(idx)"
+                  class="flex-1 min-w-[120px] h-6 text-[10px] font-mono px-2.5 flex items-center justify-between border transition-all text-left truncate shrink-0 cursor-pointer"
                   :class="currentProjectIndex === idx 
                     ? 'bg-primary text-white border-primary font-bold shadow' 
                     : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-600'"
@@ -383,47 +503,14 @@
 
               <!-- Lista Clássica de Créditos (Função à Esquerda .... Detalhe à Direita) -->
               <div class="space-y-4 text-xs sm:text-sm">
-                
-                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
-                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">ÁREA DE ATUAÇÃO</span>
-                  <span class="text-white font-bold text-right">EDIÇÃO & MONTAGEM</span>
+                <div 
+                  v-for="(c, i) in credits" 
+                  :key="i"
+                  class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2"
+                >
+                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">{{ c.label }}</span>
+                  <span :class="c.highlight ? 'text-white font-bold' : 'text-zinc-200'" class="text-right">{{ c.value }}</span>
                 </div>
-
-                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
-                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">FORMAÇÃO</span>
-                  <span class="text-zinc-200 text-right">CINEMA & AUDIOVISUAL</span>
-                </div>
-
-                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
-                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">FOCO DRAMÁTICO</span>
-                  <span class="text-zinc-200 text-right">RITMO, NARRATIVA & DECUPAGEM</span>
-                </div>
-
-                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
-                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">NLE PRINCIPAL</span>
-                  <span class="text-white font-bold text-right">ADOBE PREMIERE PRO</span>
-                </div>
-
-                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
-                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">MOTION & EFEITOS</span>
-                  <span class="text-zinc-200 text-right">ADOBE AFTER EFFECTS</span>
-                </div>
-
-                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
-                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">VÍDEO PROGRAMÁTICO</span>
-                  <span class="text-zinc-200 text-right">REMOTION (REACT) & HYPERFRAMES</span>
-                </div>
-
-                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
-                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">ESPECIALIDADE DE PROJETOS</span>
-                  <span class="text-zinc-200 text-right">CURTAS AUTORAIS, REDES & CLIPES</span>
-                </div>
-
-                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
-                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">BASE & DISPONIBILIDADE</span>
-                  <span class="text-zinc-200 text-right">BELO HORIZONTE // REMOTO & SET</span>
-                </div>
-
               </div>
 
             </div>
@@ -440,9 +527,48 @@
                 <span>CENA 03 - CONTATO // WHATSAPP</span>
               </div>
 
-              <p class="text-zinc-400 text-xs">
-                Preencha os campos abaixo para iniciar uma conversa no WhatsApp (+55 31 99527-1426) com mensagem formatada automaticamente:
-              </p>
+              <div class="space-y-3">
+                <p class="text-zinc-400 text-xs leading-relaxed">
+                  Para orçamentos, montagem de curtas ou pós-produção audiovisual, entre em contato direto ou preencha o formulário para abrir no WhatsApp:
+                </p>
+
+                <!-- Cards de Telefone e E-mail com Ação de Copiar -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono text-xs">
+                  <!-- Telefone / WhatsApp -->
+                  <div class="flex items-center justify-between bg-black border border-zinc-800 px-3 py-2">
+                    <div class="flex items-center gap-2 truncate">
+                      <i class="fa-brands fa-whatsapp text-primary text-sm shrink-0"></i>
+                      <span class="text-zinc-200 truncate">+55 31 99527-1426</span>
+                    </div>
+                    <button 
+                      type="button"
+                      @click="copyToClipboard('+5531995271426', 'phone')"
+                      class="text-zinc-400 hover:text-primary transition-colors text-xs ml-2 shrink-0 cursor-pointer p-1"
+                      :title="copiedField === 'phone' ? 'Copiado!' : 'Copiar telefone'"
+                    >
+                      <i :class="copiedField === 'phone' ? 'fa-solid fa-check text-green-400' : 'fa-regular fa-copy'"></i>
+                      <span class="text-[10px] ml-1 font-screenplay">{{ copiedField === 'phone' ? 'Copiado' : 'Copiar' }}</span>
+                    </button>
+                  </div>
+
+                  <!-- E-mail -->
+                  <div class="flex items-center justify-between bg-black border border-zinc-800 px-3 py-2">
+                    <div class="flex items-center gap-2 truncate">
+                      <i class="fa-regular fa-envelope text-primary text-sm shrink-0"></i>
+                      <span class="text-zinc-200 truncate">jeferson.i.silva@gmail.com</span>
+                    </div>
+                    <button 
+                      type="button"
+                      @click="copyToClipboard('jeferson.i.silva@gmail.com', 'email')"
+                      class="text-zinc-400 hover:text-primary transition-colors text-xs ml-2 shrink-0 cursor-pointer p-1"
+                      :title="copiedField === 'email' ? 'Copiado!' : 'Copiar e-mail'"
+                    >
+                      <i :class="copiedField === 'email' ? 'fa-solid fa-check text-green-400' : 'fa-regular fa-copy'"></i>
+                      <span class="text-[10px] ml-1 font-screenplay">{{ copiedField === 'email' ? 'Copiado' : 'Copiar' }}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
 
               <form @submit.prevent="handleSubmit" class="space-y-4">
                 <div>
@@ -479,9 +605,9 @@
 
                 <button 
                   type="submit" 
-                  class="w-full bg-primary hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider py-3 flex items-center justify-center gap-2 transition-colors"
+                  class="w-full bg-primary hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider py-3 flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
-                  <span class="iconify text-lg" data-icon="logos:whatsapp-icon"></span>
+                  <i class="fa-brands fa-whatsapp text-white text-base"></i>
                   <span>Falar Diretamente no WhatsApp</span>
                 </button>
               </form>
@@ -524,24 +650,77 @@
       <!-- Feed Vertical com Scroll Snap -->
       <div class="mobile-feed-snap w-full flex-1">
         
-        <!-- SLIDE 1: ABERTURA / TÍTULO DE FILME -->
-        <div class="mobile-feed-item relative w-full flex flex-col justify-end p-6 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=80')">
-          <div class="absolute inset-0 bg-gradient-to-t from-black via-black/85 to-black/40"></div>
-          
-          <div class="relative z-10 space-y-3 font-screenplay pb-14">
-            <span class="text-primary text-[10px] tracking-widest font-bold block uppercase">[ FADE IN: BELO HORIZONTE, MG ]</span>
-            <h1 class="text-3xl font-bold uppercase leading-tight text-white">JEFERSON SILVA</h1>
-            <p class="text-zinc-300 text-xs border-l border-primary pl-3">
-              Edição de vídeo, montagem e pós-produção audiovisual. Curtas autorais, videoclipes e narrativas dinâmicas.
-            </p>
-            <div class="pt-1 flex flex-wrap gap-2 text-[10px] font-mono text-zinc-400">
-              <span class="border border-zinc-700 bg-black/60 px-2 py-0.5">PREMIERE PRO</span>
-              <span class="border border-zinc-700 bg-black/60 px-2 py-0.5">AFTER EFFECTS</span>
-              <span class="border border-zinc-700 bg-black/60 px-2 py-0.5">REMOTION</span>
+        <!-- SLIDE 1: ABERTURA / TÍTULO DE FILME (9:16) -->
+        <div class="mobile-feed-item relative w-full flex flex-col justify-center items-center p-6 bg-black text-center select-none overflow-hidden">
+          <!-- Scanlines VHS analógicas -->
+          <div class="absolute inset-0 vhs-scanlines opacity-40 z-10 pointer-events-none"></div>
+
+          <!-- Centro Puro: Título de Abertura Adaptado para 9:16 -->
+          <div class="relative z-20 space-y-6 max-w-xs mx-auto">
+            <div class="space-y-4">
+              <h1 
+                class="vhs-title text-4xl sm:text-5xl font-bold tracking-[0.18em] uppercase text-white font-screenplay leading-tight"
+                data-text="JEFERSON SILVA"
+              >
+                JEFERSON SILVA
+              </h1>
+              <div class="w-20 h-0.5 bg-primary mx-auto"></div>
             </div>
-            <p class="text-[10px] text-zinc-400 pt-3 animate-bounce">
-              ↓ Deslize para ver os cortes
-            </p>
+
+            <div class="space-y-1.5 pt-1">
+              <p class="text-xs font-screenplay tracking-[0.35em] text-primary uppercase font-bold">
+                EDIÇÃO & MONTAGEM
+              </p>
+              <p class="font-screenplay text-[10px] tracking-[0.2em] text-zinc-500 uppercase">
+                BELO HORIZONTE, MINAS GERAIS
+              </p>
+            </div>
+          </div>
+
+          <!-- Indicador de Deslize sutil na base -->
+          <div class="absolute bottom-6 inset-x-0 z-20 text-center pointer-events-none">
+            <span class="text-[10px] text-zinc-500 font-screenplay tracking-widest uppercase animate-bounce block">
+              ↓ Deslize para ver os créditos
+            </span>
+          </div>
+        </div>
+
+        <!-- SLIDE 2: SOBRE (CRÉDITOS TÉCNICOS ADAPTADOS PARA 9:16) -->
+        <div class="mobile-feed-item relative w-full flex flex-col justify-center items-center p-6 bg-[#0a0a0c] text-zinc-300 font-screenplay select-none overflow-y-auto">
+          <div class="w-full max-w-sm mx-auto space-y-6 my-auto pt-10 pb-16">
+            
+            <!-- Cabeçalho dos Créditos 9:16 -->
+            <div class="text-center space-y-1.5 border-b border-zinc-900 pb-3">
+              <span class="text-primary text-[9px] tracking-[0.3em] uppercase font-bold block">
+                CRÉDITOS & DEPARTAMENTO
+              </span>
+              <h2 class="text-lg font-bold uppercase tracking-[0.2em] text-white">
+                JEFERSON SILVA
+              </h2>
+              <p class="text-zinc-500 text-[10px] tracking-wider">
+                ILHA DE MONTAGEM • BELO HORIZONTE, BRASIL
+              </p>
+            </div>
+
+            <!-- Lista de Créditos Consumindo scope.credits -->
+            <div class="space-y-3 text-xs">
+              <div 
+                v-for="(c, i) in credits" 
+                :key="i"
+                class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2"
+              >
+                <span class="text-zinc-500 uppercase tracking-wider text-[10px] shrink-0">{{ c.label }}</span>
+                <span :class="c.highlight ? 'text-white font-bold' : 'text-zinc-200'" class="text-right text-[11px] truncate">{{ c.value }}</span>
+              </div>
+            </div>
+
+            <!-- Indicador para os Projetos -->
+            <div class="pt-2 text-center">
+              <span class="text-[10px] text-primary font-mono tracking-wider">
+                ↓ Deslize para ver as cenas dos filmes
+              </span>
+            </div>
+
           </div>
         </div>
 
@@ -596,8 +775,41 @@
             <span class="text-primary text-xs font-bold uppercase tracking-widest block">[ CENA FINAL - VAMOS CONVERSAR ]</span>
             <h3 class="text-xl font-bold text-white uppercase">Tem um projeto para editar?</h3>
             <p class="text-zinc-400 text-xs">
-              Envie uma mensagem diretamente para o WhatsApp (+55 31 99527-1426):
+              Envie uma mensagem pelo formulário ou copie os dados de contato direto:
             </p>
+
+            <!-- Cards de Telefone e E-mail Mobile com Botão de Copiar -->
+            <div class="space-y-2 pt-1 font-mono text-xs">
+              <div class="flex items-center justify-between bg-black border border-zinc-800 px-3 py-2">
+                <div class="flex items-center gap-2 truncate">
+                  <i class="fa-brands fa-whatsapp text-primary text-sm shrink-0"></i>
+                  <span class="text-zinc-200 truncate text-[11px]">+55 31 99527-1426</span>
+                </div>
+                <button 
+                  type="button"
+                  @click="copyToClipboard('+5531995271426', 'phone_m')"
+                  class="text-zinc-400 hover:text-primary transition-colors text-xs shrink-0 cursor-pointer p-1"
+                >
+                  <i :class="copiedField === 'phone_m' ? 'fa-solid fa-check text-green-400' : 'fa-regular fa-copy'"></i>
+                  <span class="text-[10px] ml-1 font-screenplay">{{ copiedField === 'phone_m' ? 'Copiado' : 'Copiar' }}</span>
+                </button>
+              </div>
+
+              <div class="flex items-center justify-between bg-black border border-zinc-800 px-3 py-2">
+                <div class="flex items-center gap-2 truncate">
+                  <i class="fa-regular fa-envelope text-primary text-sm shrink-0"></i>
+                  <span class="text-zinc-200 truncate text-[11px]">jeferson.i.silva@gmail.com</span>
+                </div>
+                <button 
+                  type="button"
+                  @click="copyToClipboard('jeferson.i.silva@gmail.com', 'email_m')"
+                  class="text-zinc-400 hover:text-primary transition-colors text-xs shrink-0 cursor-pointer p-1"
+                >
+                  <i :class="copiedField === 'email_m' ? 'fa-solid fa-check text-green-400' : 'fa-regular fa-copy'"></i>
+                  <span class="text-[10px] ml-1 font-screenplay">{{ copiedField === 'email_m' ? 'Copiado' : 'Copiar' }}</span>
+                </button>
+              </div>
+            </div>
 
             <form @submit.prevent="handleSubmit" class="space-y-3 pt-2">
               <input 
@@ -623,26 +835,15 @@
 
               <button 
                 type="submit" 
-                class="w-full bg-primary hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider py-3 flex items-center justify-center gap-2"
+                class="w-full bg-primary hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider py-3 flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span class="iconify text-lg" data-icon="logos:whatsapp-icon"></span>
+                <i class="fa-brands fa-whatsapp text-white text-base"></i>
                 <span>Enviar pelo WhatsApp</span>
               </button>
             </form>
           </div>
         </div>
 
-      </div>
-
-      <!-- Barra de Ação Flutuante Inferior Mobile -->
-      <div class="absolute bottom-0 inset-x-0 z-30 bg-black/90 border-t border-zinc-800 p-2.5 flex items-center justify-around font-screenplay text-[11px]">
-        <button @click="scrollFeedTop" class="text-zinc-300 hover:text-primary flex items-center gap-1">
-          <span>[ Topo ]</span>
-        </button>
-        <button @click="openDirectWhatsApp" class="text-primary font-bold flex items-center gap-1.5">
-          <span class="iconify" data-icon="logos:whatsapp-icon"></span>
-          <span>[ WhatsApp Direto ]</span>
-        </button>
       </div>
 
     </div>
@@ -861,8 +1062,36 @@
             }
           ],
 
+          // Dados Técnicos de Créditos da Seção Sobre (Fonte única para Desktop e Mobile)
+          credits: [
+            { label: 'ÁREA DE ATUAÇÃO', value: 'EDIÇÃO & MONTAGEM', highlight: true },
+            { label: 'FORMAÇÃO', value: 'CINEMA & AUDIOVISUAL', highlight: false },
+            { label: 'FOCO DRAMÁTICO', value: 'RITMO, NARRATIVA & DECUPAGEM', highlight: false },
+            { label: 'NLE PRINCIPAL', value: 'ADOBE PREMIERE PRO', highlight: true },
+            { label: 'MOTION & EFEITOS', value: 'ADOBE AFTER EFFECTS', highlight: false },
+            { label: 'VÍDEO PROGRAMÁTICO', value: 'REMOTION (REACT) & HYPERFRAMES', highlight: false },
+            { label: 'ESPECIALIDADE', value: 'CURTAS AUTORAIS, REDES & CLIPES', highlight: false },
+            { label: 'BASE & ATUAÇÃO', value: 'BELO HORIZONTE // REMOTO & SET', highlight: false }
+          ],
+
           get currentProject() {
             return scope.projects[scope.currentProjectIndex] || scope.projects[0];
+          },
+
+          // Controle de Reprodução Direta no Monitor (Desktop)
+          isPlayingVideo: false,
+          playProject(idx) {
+            if (typeof idx === 'number') {
+              scope.currentProjectIndex = idx;
+            }
+            scope.isPlayingVideo = true;
+          },
+          stopVideo() {
+            scope.isPlayingVideo = false;
+          },
+          selectProject(idx) {
+            scope.currentProjectIndex = idx;
+            // Se já estava tocando um vídeo, troca para o próximo vídeo tocando imediatamente
           },
 
           nextProject() {
@@ -872,7 +1101,7 @@
             scope.currentProjectIndex = (scope.currentProjectIndex - 1 + scope.projects.length) % scope.projects.length;
           },
 
-          // Modal
+          // Modal (utilizado no Mobile para tela cheia)
           selectedProject: null,
           openModal(item) {
             scope.selectedProject = item;
@@ -904,6 +1133,30 @@
 
           openDirectWhatsApp() {
             window.open('https://api.whatsapp.com/send?phone=5531995271426&text=Ol%C3%A1%2C%20Jeferson!%20Gostaria%20de%20conversar%20sobre%20um%20projeto%20de%20edi%C3%A7%C3%A3o.', '_blank');
+          },
+
+          // Cópia para área de transferência com feedback visual
+          copiedField: null,
+          copyToClipboard(text, fieldName) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(text).then(() => {
+                scope.copiedField = fieldName;
+                setTimeout(() => {
+                  if (scope.copiedField === fieldName) scope.copiedField = null;
+                }, 2000);
+              });
+            } else {
+              const textArea = document.createElement('textarea');
+              textArea.value = text;
+              document.body.appendChild(textArea);
+              textArea.select();
+              document.execCommand('copy');
+              document.body.removeChild(textArea);
+              scope.copiedField = fieldName;
+              setTimeout(() => {
+                if (scope.copiedField === fieldName) scope.copiedField = null;
+              }, 2000);
+            }
           },
 
           scrollFeedTop() {

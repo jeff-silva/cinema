@@ -3,10 +3,10 @@
 ## Dados Pessoais & Localização
 
 - **Nome:** Jeferson Silva
-- **Idade:** 40 anos
 - **Localização:** Belo Horizonte, Minas Gerais — Brasil
 - **Disponibilidade:** Atuação remota em qualquer lugar do Brasil/exterior e presencial em Belo Horizonte e região metropolitana.
 - **WhatsApp:** +55 (31) 99527-1426
+- **E-mail:** jeferson.i.silva@gmail.com
 
 ---
 
