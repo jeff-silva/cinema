@@ -85,9 +85,6 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-  <!-- Iconify CDN -->
-  <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
-
   <!-- DaisyUI CDN (CSS) -->
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
 
@@ -99,8 +96,10 @@
       theme: {
         extend: {
           fontFamily: {
+            sans: ['"Courier Prime"', 'Courier', 'monospace'],
+            serif: ['"Courier Prime"', 'Courier', 'monospace'],
+            mono: ['"Courier Prime"', '"JetBrains Mono"', 'monospace'],
             screenplay: ['"Courier Prime"', 'Courier', 'monospace'],
-            mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
             primary: '#e50914',
@@ -140,15 +139,23 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 
   <style>
-    /* Cantos retos e opacidade sólida */
+    /* Tipografia Monospace Universal em absolutamente todos os textos */
+    *, html, body, header, footer, nav, main, input, button, textarea, select, p, span, h1, h2, h3, h4, h5, h6, a, div {
+      font-family: 'Courier Prime', Courier, monospace !important;
+    }
+
     *, ::before, ::after {
       border-radius: 0px !important;
+    }
+
+    /* Preservar fonte original do Font Awesome apenas nos ícones */
+    i, .fa, .fas, .far, .fab, .fa-solid, .fa-regular, .fa-brands, [class*="fa-"] {
+      font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
     }
 
     body {
       background-color: #090a0c;
       color: #e5e7eb;
-      font-family: 'Courier Prime', Courier, monospace;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -231,14 +238,29 @@
       pointer-events: none;
     }
 
-    /* Granulação analógica de película */
+    /* Granulação analógica de película com movimento orgânico a 12fps */
     .film-grain {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      top: -50%; left: -50%; width: 200%; height: 200%;
       pointer-events: none;
       z-index: 99;
-      opacity: 0.035;
+      opacity: 0.045;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      animation: film-grain-shift 0.5s steps(6) infinite;
+    }
+
+    @keyframes film-grain-shift {
+      0% { transform: translate(0, 0); }
+      10% { transform: translate(-2%, -3%); }
+      20% { transform: translate(3%, 1%); }
+      30% { transform: translate(-1%, 4%); }
+      40% { transform: translate(4%, -2%); }
+      50% { transform: translate(-3%, 2%); }
+      60% { transform: translate(2%, 3%); }
+      70% { transform: translate(-4%, -1%); }
+      80% { transform: translate(1%, -4%); }
+      90% { transform: translate(-2%, 3%); }
+      100% { transform: translate(0, 0); }
     }
 
     /* Transição Cinematográfica: Fade Out para Preto e Fade In */
@@ -264,18 +286,26 @@
       height: 100vh;
       height: 100dvh;
     }
+
+    /* Cloak do Vue para evitar flash de tela e layout não renderizado */
+    [v-cloak] {
+      display: none !important;
+    }
   </style>
 </head>
 <body class="selection:bg-red-600 selection:text-white antialiased h-full">
 
   <div class="film-grain"></div>
 
-  <div id="app" class="h-full flex flex-col">
+  <div id="app" v-cloak class="h-full flex flex-col">
 
     <!-- ============================================================= -->
     <!-- VERSÃO DESKTOP (Suíte de Edição Minimalista baseada no Print)  -->
     <!-- ============================================================= -->
-    <div class="hidden md:flex flex-col min-h-screen justify-between p-6 lg:p-8 w-full">
+    <div 
+      class="hidden md:flex flex-col min-h-screen justify-between p-6 lg:p-8 w-full mx-auto"
+      :style="{ maxWidth: desktopMaxWidth }"
+    >
       
       <!-- Topo: Título à esquerda & Menu em colchetes com [ Início ] à direita -->
       <header class="flex items-center justify-between font-screenplay text-sm lg:text-base tracking-wider shrink-0 pb-3 w-full">
@@ -316,9 +346,12 @@
         </nav>
       </header>
 
-      <!-- Frame Central: Sempre Proporção 16:9 Estrita e 100% de Largura da Tela -->
+      <!-- Frame Central: Sempre Proporção 16:9 Estrita, 100% da Largura vinculado a scope.desktopMaxWidth -->
       <div class="w-full my-auto py-2 flex items-center justify-center">
-        <main class="w-full aspect-video bg-black relative overflow-hidden flex flex-col justify-center items-center border border-zinc-900 shadow-2xl">
+        <main 
+          class="w-full mx-auto aspect-video bg-black relative overflow-hidden flex flex-col justify-center items-center border border-zinc-900 shadow-2xl"
+          :style="{ maxWidth: desktopMaxWidth }"
+        >
           
           <transition name="fade-cinema" mode="out-in">
           
@@ -411,6 +444,7 @@
                 <img 
                   :src="currentProject.image" 
                   :alt="currentProject.title"
+                  @error="(e) => { if (currentProject.youtubeId && !e.target.src.includes('hqdefault')) e.target.src = `https://img.youtube.com/vi/${currentProject.youtubeId}/hqdefault.jpg`; }"
                   class="w-full h-full object-cover opacity-85 transition-opacity duration-300"
                 />
                 
@@ -422,7 +456,7 @@
                 <div class="absolute inset-0 flex items-center justify-center">
                   <button 
                     @click="playProject(currentProjectIndex)"
-                    class="w-16 h-16 bg-black/85 border border-primary text-white flex items-center justify-center hover:bg-primary transition-all duration-150 shadow-2xl cursor-pointer"
+                    class="w-16 h-16 bg-black/85 border border-zinc-700 hover:border-white text-white flex items-center justify-center hover:bg-zinc-900 transition-all duration-150 shadow-2xl cursor-pointer"
                     title="Reproduzir no monitor"
                   >
                     <i class="fa-solid fa-play text-xl ml-1 text-white"></i>
@@ -487,27 +521,13 @@
             key="sobre" 
             class="w-full h-full bg-[#0a0a0c] text-zinc-300 p-6 lg:p-12 overflow-y-auto flex items-center justify-center border border-zinc-900 font-screenplay select-none"
           >
-            <div class="max-w-2xl w-full mx-auto space-y-8 py-4">
-              
-              <!-- Cabeçalho dos Créditos -->
-              <div class="text-center space-y-2 border-b border-zinc-900 pb-4">
-                <span class="text-primary text-[10px] tracking-[0.35em] uppercase font-bold block">
-                  CRÉDITOS TÉCNICOS & DEPARTAMENTO DE PÓS-PRODUÇÃO
-                </span>
-                <h2 class="text-xl sm:text-2xl font-bold uppercase tracking-[0.2em] text-white">
-                  JEFERSON SILVA
-                </h2>
-                <p class="text-zinc-500 text-xs tracking-wider">
-                  ILHA DE MONTAGEM • BELO HORIZONTE, BRASIL
-                </p>
-              </div>
-
-              <!-- Lista Clássica de Créditos (Função à Esquerda .... Detalhe à Direita) -->
+            <div class="max-w-2xl w-full mx-auto py-4">
+              <!-- Lista Clássica de Créditos -->
               <div class="space-y-4 text-xs sm:text-sm">
                 <div 
                   v-for="(c, i) in credits" 
                   :key="i"
-                  class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2"
+                  class="flex items-baseline justify-between py-1 gap-4"
                 >
                   <span class="text-zinc-500 uppercase tracking-wider shrink-0">{{ c.label }}</span>
                   <span :class="c.highlight ? 'text-white font-bold' : 'text-zinc-200'" class="text-right">{{ c.value }}</span>
@@ -691,36 +711,16 @@
         <div class="mobile-feed-item relative w-full flex flex-col justify-center items-center p-6 bg-[#0a0a0c] text-zinc-300 font-screenplay select-none overflow-y-auto">
           <div class="w-full max-w-sm mx-auto space-y-6 my-auto pt-10 pb-16">
             
-            <!-- Cabeçalho dos Créditos 9:16 -->
-            <div class="text-center space-y-1.5 border-b border-zinc-900 pb-3">
-              <span class="text-primary text-[9px] tracking-[0.3em] uppercase font-bold block">
-                CRÉDITOS & DEPARTAMENTO
-              </span>
-              <h2 class="text-lg font-bold uppercase tracking-[0.2em] text-white">
-                JEFERSON SILVA
-              </h2>
-              <p class="text-zinc-500 text-[10px] tracking-wider">
-                ILHA DE MONTAGEM • BELO HORIZONTE, BRASIL
-              </p>
-            </div>
-
-            <!-- Lista de Créditos Consumindo scope.credits -->
+            <!-- Lista de Créditos Consumindo scope.credits Sem Linhas -->
             <div class="space-y-3 text-xs">
               <div 
                 v-for="(c, i) in credits" 
                 :key="i"
-                class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2"
+                class="flex items-baseline justify-between py-1 gap-2"
               >
                 <span class="text-zinc-500 uppercase tracking-wider text-[10px] shrink-0">{{ c.label }}</span>
                 <span :class="c.highlight ? 'text-white font-bold' : 'text-zinc-200'" class="text-right text-[11px] truncate">{{ c.value }}</span>
               </div>
-            </div>
-
-            <!-- Indicador para os Projetos -->
-            <div class="pt-2 text-center">
-              <span class="text-[10px] text-primary font-mono tracking-wider">
-                ↓ Deslize para ver as cenas dos filmes
-              </span>
             </div>
 
           </div>
@@ -791,7 +791,7 @@
             <div class="relative z-10 flex items-center justify-center">
               <button 
                 @click="playingMobileId = item.id"
-                class="w-16 h-16 bg-black/80 border-2 border-primary text-white flex items-center justify-center hover:bg-primary transition-colors cursor-pointer shadow-2xl"
+                class="w-16 h-16 bg-black/80 border border-zinc-700 hover:border-white text-white flex items-center justify-center hover:bg-zinc-900 transition-colors cursor-pointer shadow-2xl"
                 title="Assistir agora"
               >
                 <i class="fa-solid fa-play text-xl ml-1"></i>
@@ -896,6 +896,9 @@
     createApp({
       setup() {
         const scope = reactive({
+          // Configuração de Layout Desktop
+          desktopMaxWidth: '1300px',
+
           // Aba ativa no Desktop: 'inicio' | 'sobre' | 'projetos' | 'contato'
           activeTab: 'inicio',
 
@@ -918,7 +921,7 @@
               slug: 'nostalgia',
               year: '2024',
               youtubeId: 'JkOR1eej2II',
-              image: 'https://img.youtube.com/vi/JkOR1eej2II/maxresdefault.jpg'
+              image: 'https://img.youtube.com/vi/JkOR1eej2II/hqdefault.jpg'
             },
             {
               id: 2,
