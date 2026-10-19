@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark h-full bg-[#090a0c]" data-theme="cinemaDark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Jeferson Silva — Edição</title>
+
+  <!-- Tipografia Autêntica de Roteiro de Cinema: Courier Prime & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Iconify CDN -->
+  <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+
+  <!-- DaisyUI CDN (CSS) -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            screenplay: ['"Courier Prime"', 'Courier', 'monospace'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            primary: '#e50914',
+            cinema: {
+              black: '#090a0c',
+              dark: '#111317',
+              surface: '#16191f',
+              border: '#262a33',
+              red: '#e50914',
+            }
+          }
+        }
+      },
+      daisyui: {
+        themes: [
+          {
+            cinemaDark: {
+              "primary": "#e50914",
+              "secondary": "#991b1b",
+              "accent": "#e50914",
+              "neutral": "#16191f",
+              "base-100": "#090a0c",
+              "base-200": "#111317",
+              "base-300": "#1d2129",
+              "--rounded-box": "0px",
+              "--rounded-btn": "0px",
+              "--rounded-badge": "0px",
+              "--border-btn": "1px",
+            }
+          }
+        ]
+      }
+    }
+  </script>
+
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+  <style>
+    /* Cantos retos e opacidade sólida */
+    *, ::before, ::after {
+      border-radius: 0px !important;
+    }
+
+    body {
+      background-color: #090a0c;
+      color: #e5e7eb;
+      font-family: 'Courier Prime', Courier, monospace;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Efeito VHS: Aberração cromática analógica */
+    .vhs-title {
+      position: relative;
+      display: inline-block;
+      text-shadow: 
+        -2px 0 0 rgba(229, 9, 20, 0.75),
+         2px 0 0 rgba(0, 230, 255, 0.65);
+      animation: vhs-flicker 3s infinite alternate;
+    }
+
+    .vhs-title::before {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      color: #fff;
+      clip-path: polygon(0 20%, 100% 20%, 100% 30%, 0 30%);
+      transform: translate(-2px, 0);
+      opacity: 0.8;
+      animation: vhs-glitch-top 4s infinite linear alternate-reverse;
+      pointer-events: none;
+    }
+
+    .vhs-title::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      color: #fff;
+      clip-path: polygon(0 65%, 100% 65%, 100% 75%, 0 75%);
+      transform: translate(2px, 0);
+      opacity: 0.8;
+      animation: vhs-glitch-bottom 3.5s infinite linear alternate-reverse;
+      pointer-events: none;
+    }
+
+    @keyframes vhs-flicker {
+      0%, 100% {
+        text-shadow: -2px 0 0 rgba(229, 9, 20, 0.75), 2px 0 0 rgba(0, 230, 255, 0.65);
+      }
+      25% {
+        text-shadow: -1px 0 0 rgba(229, 9, 20, 0.8), 3px 0 0 rgba(0, 230, 255, 0.5);
+      }
+      70% {
+        text-shadow: -3px 0 0 rgba(229, 9, 20, 0.6), 1px 0 0 rgba(0, 230, 255, 0.8);
+      }
+    }
+
+    @keyframes vhs-glitch-top {
+      0%, 90% { transform: translate(0, 0); opacity: 0; }
+      92% { transform: translate(-3px, 1px); opacity: 0.9; }
+      94% { transform: translate(2px, -1px); opacity: 0.9; }
+      96%, 100% { transform: translate(0, 0); opacity: 0; }
+    }
+
+    @keyframes vhs-glitch-bottom {
+      0%, 85% { transform: translate(0, 0); opacity: 0; }
+      87% { transform: translate(3px, -1px); opacity: 0.9; }
+      89% { transform: translate(-2px, 1px); opacity: 0.9; }
+      91%, 100% { transform: translate(0, 0); opacity: 0; }
+    }
+
+    /* Linhas de varredura VHS (scanlines) */
+    .vhs-scanlines {
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0, 0, 0, 0.35) 50%,
+        rgba(0, 0, 0, 0.35)
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+    }
+
+    /* Granulação analógica de película */
+    .film-grain {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 99;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Transição Cinematográfica: Fade Out para Preto e Fade In */
+    .fade-cinema-enter-active,
+    .fade-cinema-leave-active {
+      transition: opacity 0.4s ease;
+    }
+    .fade-cinema-enter-from,
+    .fade-cinema-leave-to {
+      opacity: 0;
+    }
+
+    /* Feed vertical mobile com snap */
+    .mobile-feed-snap {
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .mobile-feed-item {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      height: 100vh;
+      height: 100dvh;
+    }
+  </style>
+</head>
+<body class="selection:bg-red-600 selection:text-white antialiased h-full">
+
+  <div class="film-grain"></div>
+
+  <div id="app" class="h-full flex flex-col">
+
+    <!-- ============================================================= -->
+    <!-- VERSÃO DESKTOP (Suíte de Edição Minimalista baseada no Print)  -->
+    <!-- ============================================================= -->
+    <div class="hidden md:flex flex-col h-screen justify-between p-6 lg:p-8 max-w-7xl mx-auto w-full">
+      
+      <!-- Topo: Título à esquerda & Menu em colchetes com [ Início ] à direita -->
+      <header class="flex items-center justify-between font-screenplay text-sm lg:text-base tracking-wider shrink-0 pb-3">
+        <a href="#" @click.prevent="navigate('inicio')" class="text-white font-bold hover:text-primary transition-colors flex items-center gap-2">
+          <span>Jeferson Silva - Edição</span>
+        </a>
+
+        <!-- Menu Desktop: Início, Sobre, Projetos, Contato -->
+        <nav class="flex items-center gap-1.5 text-zinc-300">
+          <button 
+            @click="navigate('inicio')" 
+            :class="activeTab === 'inicio' ? 'text-primary font-bold' : 'hover:text-white'"
+            class="transition-colors px-1"
+          >
+            [ Início ]
+          </button>
+          <button 
+            @click="navigate('sobre')" 
+            :class="activeTab === 'sobre' ? 'text-primary font-bold' : 'hover:text-white'"
+            class="transition-colors px-1"
+          >
+            [ Sobre ]
+          </button>
+          <button 
+            @click="navigate('projetos')" 
+            :class="activeTab === 'projetos' ? 'text-primary font-bold' : 'hover:text-white'"
+            class="transition-colors px-1"
+          >
+            [ Projetos ]
+          </button>
+          <button 
+            @click="navigate('contato')" 
+            :class="activeTab === 'contato' ? 'text-primary font-bold' : 'hover:text-white'"
+            class="transition-colors px-1"
+          >
+            [ Contato ]
+          </button>
+        </nav>
+      </header>
+
+      <!-- Frame Central: A Tela / Monitor de Exibição Cinematográfico (Fundo Preto Absoluto) -->
+      <main class="flex-1 my-2 bg-black relative overflow-hidden flex flex-col justify-center items-center border border-zinc-900">
+        
+        <transition name="fade-cinema" mode="out-in">
+          
+          <!-- SEÇÃO 01: INÍCIO (TITLE CARD PURO DE FILME COM EFEITO VHS RETRÔ) -->
+          <div 
+            v-if="activeTab === 'inicio'" 
+            key="inicio" 
+            class="w-full h-full relative flex items-center justify-center p-6 lg:p-12 bg-black text-white select-none overflow-hidden"
+          >
+            <!-- Scanlines analógicas de fita VHS sobrepostas suavemente -->
+            <div class="absolute inset-0 vhs-scanlines opacity-50 z-10 pointer-events-none"></div>
+
+            <!-- Centro Puro: Cartão de Título de Abertura de Filme -->
+            <div class="relative z-20 text-center space-y-6 max-w-4xl mx-auto">
+              <!-- Nome Titular do Filme com Efeito VHS (Aberração cromática RGB & Glitch analógico) -->
+              <div class="space-y-4">
+                <h1 
+                  class="vhs-title text-4xl sm:text-6xl lg:text-7xl font-bold tracking-[0.2em] uppercase text-white font-screenplay leading-none"
+                  data-text="JEFERSON SILVA"
+                >
+                  JEFERSON SILVA
+                </h1>
+                <div class="w-20 h-0.5 bg-primary mx-auto"></div>
+              </div>
+
+              <!-- O que faz como Subtítulo do Filme em Vermelho Cinema -->
+              <div class="space-y-1.5 pt-1">
+                <p class="text-xs sm:text-sm lg:text-base font-screenplay tracking-[0.4em] text-primary uppercase font-bold">
+                  EDIÇÃO & MONTAGEM CINEMATOGRÁFICA
+                </p>
+                <p class="font-screenplay text-[11px] lg:text-xs tracking-[0.25em] text-zinc-500 uppercase">
+                  BELO HORIZONTE, MINAS GERAIS
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEÇÃO 02: PROJETOS (MONITOR & TIMELINE INTERATIVA) -->
+          <div 
+            v-else-if="activeTab === 'projetos'" 
+            key="projetos" 
+            class="w-full h-full relative flex flex-col bg-black"
+          >
+            <!-- Imagem do Plano / Take Atual -->
+            <div class="relative flex-1 w-full overflow-hidden flex items-center justify-center bg-black">
+              <img 
+                :src="currentProject.image" 
+                :alt="currentProject.title"
+                class="w-full h-full object-cover opacity-85 transition-opacity duration-300"
+              />
+              
+              <!-- Letterbox 2.39:1 -->
+              <div class="absolute inset-x-0 top-0 h-8 lg:h-12 bg-black/95 pointer-events-none border-b border-zinc-900"></div>
+              <div class="absolute inset-x-0 bottom-0 h-8 lg:h-12 bg-black/95 pointer-events-none border-t border-zinc-900"></div>
+
+              <!-- Botão Central de Play -->
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <button 
+                  @click="openModal(currentProject)"
+                  class="pointer-events-auto w-16 h-16 bg-black/85 border border-primary text-white flex items-center justify-center hover:bg-primary transition-all duration-150 shadow-2xl"
+                >
+                  <i class="fa-solid fa-play text-xl ml-1 text-white"></i>
+                </button>
+              </div>
+
+              <!-- Metadados de Cena estilo Slugline -->
+              <div class="absolute top-10 lg:top-14 left-6 z-10 font-screenplay text-xs text-white bg-black/85 px-3 py-1.5 border border-zinc-800">
+                <span class="text-primary font-bold">CENA 0{{ currentProjectIndex + 1 }}:</span> {{ currentProject.sceneSlug }}
+              </div>
+
+              <div class="absolute top-10 lg:top-14 right-6 z-10 font-mono text-xs text-zinc-400 bg-black/85 px-3 py-1.5 border border-zinc-800">
+                {{ currentProject.format }} • {{ currentProject.duration }}
+              </div>
+
+              <!-- Setas de Navegação -->
+              <button 
+                @click="prevProject"
+                class="absolute left-4 z-20 w-10 h-10 bg-black/80 hover:bg-primary text-white border border-zinc-700 flex items-center justify-center transition-colors"
+              >
+                <i class="fa-solid fa-chevron-left text-sm"></i>
+              </button>
+              <button 
+                @click="nextProject"
+                class="absolute right-4 z-20 w-10 h-10 bg-black/80 hover:bg-primary text-white border border-zinc-700 flex items-center justify-center transition-colors"
+              >
+                <i class="fa-solid fa-chevron-right text-sm"></i>
+              </button>
+            </div>
+
+            <!-- Timeline da Ilha de Edição (base da tela) -->
+            <div class="h-20 bg-[#111317] border-t border-zinc-800 px-6 py-2 flex flex-col justify-between shrink-0 font-screenplay text-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-white font-bold tracking-wider uppercase">{{ currentProject.title }}</span>
+                <span class="text-zinc-400 font-mono text-[11px]">{{ currentProject.role }} // {{ currentProject.software }}</span>
+              </div>
+
+              <!-- Clipes na Linha de Tempo -->
+              <div class="w-full flex items-center gap-1.5 py-1 overflow-x-auto scrollbar-none">
+                <button 
+                  v-for="(p, idx) in projects" 
+                  :key="p.id"
+                  @click="currentProjectIndex = idx"
+                  class="flex-1 min-w-[120px] h-6 text-[10px] font-mono px-2.5 flex items-center justify-between border transition-all text-left truncate shrink-0"
+                  :class="currentProjectIndex === idx 
+                    ? 'bg-primary text-white border-primary font-bold shadow' 
+                    : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-600'"
+                >
+                  <span class="truncate">0{{ idx + 1 }}. {{ p.shortTitle }}</span>
+                  <span class="text-[9px] opacity-70 ml-1">{{ p.year }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEÇÃO 03: SOBRE (CRÉDITOS TÉCNICOS CLÁSSICOS DE CINEMA) -->
+          <div 
+            v-else-if="activeTab === 'sobre'" 
+            key="sobre" 
+            class="w-full h-full bg-[#0a0a0c] text-zinc-300 p-6 lg:p-12 overflow-y-auto flex items-center justify-center border border-zinc-900 font-screenplay select-none"
+          >
+            <div class="max-w-2xl w-full mx-auto space-y-8 py-4">
+              
+              <!-- Cabeçalho dos Créditos -->
+              <div class="text-center space-y-2 border-b border-zinc-900 pb-4">
+                <span class="text-primary text-[10px] tracking-[0.35em] uppercase font-bold block">
+                  CRÉDITOS TÉCNICOS & DEPARTAMENTO DE PÓS-PRODUÇÃO
+                </span>
+                <h2 class="text-xl sm:text-2xl font-bold uppercase tracking-[0.2em] text-white">
+                  JEFERSON SILVA
+                </h2>
+                <p class="text-zinc-500 text-xs tracking-wider">
+                  ILHA DE MONTAGEM • BELO HORIZONTE, BRASIL
+                </p>
+              </div>
+
+              <!-- Lista Clássica de Créditos (Função à Esquerda .... Detalhe à Direita) -->
+              <div class="space-y-4 text-xs sm:text-sm">
+                
+                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
+                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">ÁREA DE ATUAÇÃO</span>
+                  <span class="text-white font-bold text-right">EDIÇÃO & MONTAGEM</span>
+                </div>
+
+                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
+                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">FORMAÇÃO</span>
+                  <span class="text-zinc-200 text-right">CINEMA & AUDIOVISUAL</span>
+                </div>
+
+                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
+                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">FOCO DRAMÁTICO</span>
+                  <span class="text-zinc-200 text-right">RITMO, NARRATIVA & DECUPAGEM</span>
+                </div>
+
+                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
+                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">NLE PRINCIPAL</span>
+                  <span class="text-white font-bold text-right">ADOBE PREMIERE PRO</span>
+                </div>
+
+                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
+                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">MOTION & EFEITOS</span>
+                  <span class="text-zinc-200 text-right">ADOBE AFTER EFFECTS</span>
+                </div>
+
+                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
+                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">VÍDEO PROGRAMÁTICO</span>
+                  <span class="text-zinc-200 text-right">REMOTION (REACT) & HYPERFRAMES</span>
+                </div>
+
+                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
+                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">ESPECIALIDADE DE PROJETOS</span>
+                  <span class="text-zinc-200 text-right">CURTAS AUTORAIS, REDES & CLIPES</span>
+                </div>
+
+                <div class="flex items-baseline justify-between border-b border-zinc-900/60 pb-1.5 gap-2">
+                  <span class="text-zinc-500 uppercase tracking-wider shrink-0">BASE & DISPONIBILIDADE</span>
+                  <span class="text-zinc-200 text-right">BELO HORIZONTE // REMOTO & SET</span>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+          <!-- SEÇÃO 04: CONTATO (CONTATO WHATSAPP) -->
+          <div 
+            v-else-if="activeTab === 'contato'" 
+            key="contato" 
+            class="w-full h-full bg-[#0d0e11] text-zinc-300 p-8 lg:p-12 overflow-y-auto flex items-center justify-center border border-zinc-800 font-screenplay"
+          >
+            <div class="max-w-xl w-full space-y-6">
+              <div class="text-primary text-xs font-bold tracking-widest uppercase border-b border-zinc-800 pb-2">
+                <span>CENA 03 - CONTATO // WHATSAPP</span>
+              </div>
+
+              <p class="text-zinc-400 text-xs">
+                Preencha os campos abaixo para iniciar uma conversa no WhatsApp (+55 31 99527-1426) com mensagem formatada automaticamente:
+              </p>
+
+              <form @submit.prevent="handleSubmit" class="space-y-4">
+                <div>
+                  <label class="block text-xs uppercase text-zinc-400 mb-1">Seu Nome / Produtora *</label>
+                  <input 
+                    type="text" 
+                    v-model="form.name" 
+                    required
+                    placeholder="Nome ou empresa"
+                    class="w-full bg-black border border-zinc-700 px-3 py-2 text-white text-xs focus:border-primary focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-xs uppercase text-zinc-400 mb-1">E-mail de Contato (opcional)</label>
+                  <input 
+                    type="email" 
+                    v-model="form.email" 
+                    placeholder="seuemail@exemplo.com"
+                    class="w-full bg-black border border-zinc-700 px-3 py-2 text-white text-xs focus:border-primary focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-xs uppercase text-zinc-400 mb-1">Mensagem sobre o Projeto *</label>
+                  <textarea 
+                    v-model="form.message" 
+                    rows="3" 
+                    required
+                    placeholder="Descreva o projeto (curta, clipe, redes sociais, prazos)..."
+                    class="w-full bg-black border border-zinc-700 px-3 py-2 text-white text-xs focus:border-primary focus:outline-none"
+                  ></textarea>
+                </div>
+
+                <button 
+                  type="submit" 
+                  class="w-full bg-primary hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider py-3 flex items-center justify-center gap-2 transition-colors"
+                >
+                  <span class="iconify text-lg" data-icon="logos:whatsapp-icon"></span>
+                  <span>Falar Diretamente no WhatsApp</span>
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </transition>
+
+      </main>
+
+      <!-- Rodapé Desktop Fiel ao Print: Timecode à esquerda & Direitos reservados à direita -->
+      <footer class="flex items-center justify-between font-screenplay text-xs lg:text-sm text-zinc-400 shrink-0 pt-3">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 bg-primary animate-pulse inline-block"></span>
+          <span class="font-mono text-zinc-300">TC: {{ timecode }}</span>
+        </div>
+
+        <div>
+          <span>2026 - Todos os direitos reservados</span>
+        </div>
+      </footer>
+
+    </div>
+
+
+    <!-- ============================================================= -->
+    <!-- VERSÃO MOBILE (Feed Vertical Imersivo estilo Reels/Shorts)     -->
+    <!-- ============================================================= -->
+    <div class="md:hidden flex-1 flex flex-col h-screen overflow-hidden bg-black text-white relative">
+      
+      <!-- Topo Fixo Mobile Minimalista -->
+      <div class="absolute top-0 inset-x-0 z-30 bg-gradient-to-b from-black/90 via-black/50 to-transparent p-4 flex items-center justify-between font-screenplay text-xs">
+        <span class="font-bold text-white tracking-wider">Jeferson Silva</span>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 bg-primary animate-pulse"></span>
+          <span class="font-mono text-[10px] text-zinc-300">{{ timecode }}</span>
+        </div>
+      </div>
+
+      <!-- Feed Vertical com Scroll Snap -->
+      <div class="mobile-feed-snap w-full flex-1">
+        
+        <!-- SLIDE 1: ABERTURA / TÍTULO DE FILME -->
+        <div class="mobile-feed-item relative w-full flex flex-col justify-end p-6 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=80')">
+          <div class="absolute inset-0 bg-gradient-to-t from-black via-black/85 to-black/40"></div>
+          
+          <div class="relative z-10 space-y-3 font-screenplay pb-14">
+            <span class="text-primary text-[10px] tracking-widest font-bold block uppercase">[ FADE IN: BELO HORIZONTE, MG ]</span>
+            <h1 class="text-3xl font-bold uppercase leading-tight text-white">JEFERSON SILVA</h1>
+            <p class="text-zinc-300 text-xs border-l border-primary pl-3">
+              Edição de vídeo, montagem e pós-produção audiovisual. Curtas autorais, videoclipes e narrativas dinâmicas.
+            </p>
+            <div class="pt-1 flex flex-wrap gap-2 text-[10px] font-mono text-zinc-400">
+              <span class="border border-zinc-700 bg-black/60 px-2 py-0.5">PREMIERE PRO</span>
+              <span class="border border-zinc-700 bg-black/60 px-2 py-0.5">AFTER EFFECTS</span>
+              <span class="border border-zinc-700 bg-black/60 px-2 py-0.5">REMOTION</span>
+            </div>
+            <p class="text-[10px] text-zinc-400 pt-3 animate-bounce">
+              ↓ Deslize para ver os cortes
+            </p>
+          </div>
+        </div>
+
+        <!-- SLIDES DOS PROJETOS (CADA PROJETO É UMA CENA VERTICAL) -->
+        <div 
+          v-for="(item, idx) in projects" 
+          :key="item.id"
+          class="mobile-feed-item relative w-full flex flex-col justify-between p-6 bg-cover bg-center"
+          :style="`background-image: url('${item.image}')`"
+        >
+          <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/40"></div>
+
+          <!-- Topo do Slide -->
+          <div class="relative z-10 pt-12 flex justify-between items-center text-[10px] font-screenplay">
+            <span class="bg-black/80 border border-zinc-800 px-2.5 py-1 text-primary font-bold">
+              CENA 0{{ idx + 1 }}
+            </span>
+            <span class="bg-black/80 border border-zinc-800 px-2.5 py-1 text-zinc-400 font-mono">
+              {{ item.duration }}
+            </span>
+          </div>
+
+          <!-- Centro: Botão Play de Cinema -->
+          <div class="relative z-10 flex items-center justify-center">
+            <button 
+              @click="openModal(item)"
+              class="w-16 h-16 bg-black/80 border-2 border-primary text-white flex items-center justify-center"
+            >
+              <i class="fa-solid fa-play text-xl ml-1"></i>
+            </button>
+          </div>
+
+          <!-- Rodapé do Slide -->
+          <div class="relative z-10 pb-16 space-y-2 font-screenplay">
+            <span class="text-primary text-[10px] uppercase tracking-wider block font-bold">
+              {{ item.categoryLabel }} • {{ item.year }}
+            </span>
+            <h3 class="text-xl font-bold uppercase text-white">{{ item.title }}</h3>
+            <p class="text-zinc-300 text-xs line-clamp-2 leading-relaxed">
+              {{ item.description }}
+            </p>
+            <div class="flex items-center gap-2 pt-1 font-mono text-[10px] text-zinc-400">
+              <span class="border border-zinc-700 bg-black/80 px-2 py-0.5">{{ item.software }}</span>
+              <span class="border border-zinc-700 bg-black/80 px-2 py-0.5">{{ item.format }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE FINAL: CONTATO NO MOBILE -->
+        <div class="mobile-feed-item relative w-full flex flex-col justify-center p-6 bg-[#0e0f12]">
+          <div class="space-y-4 font-screenplay pb-14">
+            <span class="text-primary text-xs font-bold uppercase tracking-widest block">[ CENA FINAL - VAMOS CONVERSAR ]</span>
+            <h3 class="text-xl font-bold text-white uppercase">Tem um projeto para editar?</h3>
+            <p class="text-zinc-400 text-xs">
+              Envie uma mensagem diretamente para o WhatsApp (+55 31 99527-1426):
+            </p>
+
+            <form @submit.prevent="handleSubmit" class="space-y-3 pt-2">
+              <input 
+                type="text" 
+                v-model="form.name" 
+                required
+                placeholder="Seu Nome / Produtora"
+                class="w-full bg-black border border-zinc-700 px-3 py-2.5 text-white text-xs focus:border-primary focus:outline-none"
+              />
+              <input 
+                type="email" 
+                v-model="form.email" 
+                placeholder="Seu E-mail (opcional)"
+                class="w-full bg-black border border-zinc-700 px-3 py-2.5 text-white text-xs focus:border-primary focus:outline-none"
+              />
+              <textarea 
+                v-model="form.message" 
+                rows="3" 
+                required
+                placeholder="Mensagem sobre o projeto..."
+                class="w-full bg-black border border-zinc-700 px-3 py-2.5 text-white text-xs focus:border-primary focus:outline-none"
+              ></textarea>
+
+              <button 
+                type="submit" 
+                class="w-full bg-primary hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider py-3 flex items-center justify-center gap-2"
+              >
+                <span class="iconify text-lg" data-icon="logos:whatsapp-icon"></span>
+                <span>Enviar pelo WhatsApp</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Barra de Ação Flutuante Inferior Mobile -->
+      <div class="absolute bottom-0 inset-x-0 z-30 bg-black/90 border-t border-zinc-800 p-2.5 flex items-center justify-around font-screenplay text-[11px]">
+        <button @click="scrollFeedTop" class="text-zinc-300 hover:text-primary flex items-center gap-1">
+          <span>[ Topo ]</span>
+        </button>
+        <button @click="openDirectWhatsApp" class="text-primary font-bold flex items-center gap-1.5">
+          <span class="iconify" data-icon="logos:whatsapp-icon"></span>
+          <span>[ WhatsApp Direto ]</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- MODAL DE VISUALIZAÇÃO DE PROJETO (DAISYUI DIALOG) -->
+    <dialog id="project_modal" class="modal bg-black/90">
+      <div v-if="selectedProject" class="modal-box max-w-2xl w-full p-0 bg-[#121316] border border-zinc-700 font-screenplay">
+        
+        <div class="px-5 py-3 bg-black border-b border-zinc-800 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-primary animate-pulse"></span>
+            <span class="text-white font-bold">{{ selectedProject.title }}</span>
+          </div>
+          <form method="dialog">
+            <button @click="closeModal" class="text-zinc-400 hover:text-white text-sm">
+              [ Fechar ]
+            </button>
+          </form>
+        </div>
+
+        <div class="relative aspect-video bg-black">
+          <iframe 
+            v-if="selectedProject.youtubeId"
+            :src="`https://www.youtube.com/embed/${selectedProject.youtubeId}?autoplay=1&rel=0`" 
+            :title="selectedProject.title"
+            class="w-full h-full border-0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          ></iframe>
+          <div v-else class="relative w-full h-full">
+            <img 
+              :src="selectedProject.image" 
+              :alt="selectedProject.title"
+              class="w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-14 h-14 bg-black/80 border border-primary text-white flex items-center justify-center">
+                <i class="fa-solid fa-play text-lg ml-1"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-6 space-y-4">
+          <div>
+            <span class="text-primary text-[10px] font-bold block uppercase">{{ selectedProject.categoryLabel }} • {{ selectedProject.year }}</span>
+            <h3 class="text-xl font-bold text-white uppercase mt-0.5">{{ selectedProject.title }}</h3>
+          </div>
+
+          <p class="text-zinc-300 text-xs sm:text-sm leading-relaxed">
+            {{ selectedProject.description }}
+          </p>
+
+          <div class="grid grid-cols-2 gap-3 pt-3 border-t border-zinc-800 font-mono text-[10px] text-zinc-400">
+            <div>SOFTWARE: <strong class="text-white">{{ selectedProject.software }}</strong></div>
+            <div>FORMATO: <strong class="text-white">{{ selectedProject.format }}</strong></div>
+          </div>
+        </div>
+
+        <div class="px-6 py-3 bg-black border-t border-zinc-800 flex items-center justify-between">
+          <a 
+            v-if="selectedProject.youtubeId"
+            :href="`https://www.youtube.com/watch?v=${selectedProject.youtubeId}`" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="text-xs text-zinc-400 hover:text-primary flex items-center gap-1.5 transition-colors"
+          >
+            <i class="fa-brands fa-youtube text-primary text-sm"></i>
+            <span>[ Abrir no YouTube ]</span>
+          </a>
+          <div v-else></div>
+
+          <form method="dialog">
+            <button @click="closeModal" class="btn btn-sm btn-outline border-zinc-700 text-zinc-300 hover:text-white font-screenplay text-xs">
+              Fechar Cena
+            </button>
+          </form>
+        </div>
+
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button @click="closeModal">fechar</button>
+      </form>
+    </dialog>
+
+  </div>
+
+  <!-- VUE 3: reactive(scope) -->
+  <script>
+    const { createApp, reactive, onMounted, onUnmounted } = Vue;
+
+    createApp({
+      setup() {
+        const scope = reactive({
+          // Aba ativa no Desktop: 'inicio' | 'sobre' | 'projetos' | 'contato'
+          activeTab: 'inicio',
+
+          navigate(tab) {
+            if (scope.activeTab === tab) return;
+            scope.activeTab = tab;
+          },
+
+          // Timecode dinâmico estilo cinema a 24fps
+          timecode: '01:00:10:03',
+          tcFrame: 72,
+          tcInterval: null,
+
+          // Lista de Projetos reais do canal
+          currentProjectIndex: 0,
+          projects: [
+            {
+              id: 1,
+              title: 'Nostalgia',
+              shortTitle: 'Nostalgia',
+              sceneSlug: 'EXT. MEMÓRIAS & TEMPO - CORTE CONTÍNUO',
+              categoryLabel: 'Curta Autoral',
+              role: 'Montagem & Pós-produção',
+              year: '2024',
+              duration: 'Curta-metragem',
+              youtubeId: 'JkOR1eej2II',
+              image: 'https://img.youtube.com/vi/JkOR1eej2II/maxresdefault.jpg',
+              description: 'Obra autoral com ritmo reflexivo e decupagem cuidadosa, explorando memória afetiva, passagens de tempo e atmosfera cinematográfica.',
+              software: 'Premiere Pro',
+              format: 'FHD • 16:9'
+            },
+            {
+              id: 2,
+              title: 'Efêmera',
+              shortTitle: 'Efêmera',
+              sceneSlug: 'INT. RITMO & DETALHES - TRANSIÇÃO',
+              categoryLabel: 'Curta Autoral',
+              role: 'Edição & Montagem',
+              year: '2024',
+              duration: 'Curta-metragem',
+              youtubeId: 'a1qUqTNKtYE',
+              image: 'https://img.youtube.com/vi/a1qUqTNKtYE/maxresdefault.jpg',
+              description: 'Construção narrativa baseada em sensações fugazes, cortes dinâmicos e sincronia fina entre trilha sonora e imagem.',
+              software: 'Premiere + After Effects',
+              format: 'FHD • 16:9'
+            },
+            {
+              id: 3,
+              title: 'O Jogo dos Caçadores',
+              shortTitle: 'Caçadores',
+              sceneSlug: 'EXT. TENSÃO & CONFLITO - MONTAGEM PARALELA',
+              categoryLabel: 'Curta de Ficção',
+              role: 'Montagem & Decupagem',
+              year: '2023',
+              duration: 'Ficção / Suspense',
+              youtubeId: 'ZnRfCsd3Z7Y',
+              image: 'https://img.youtube.com/vi/ZnRfCsd3Z7Y/maxresdefault.jpg',
+              description: 'Narrativa de suspense com montagem paralela, timing de tensão progressiva e trabalho de pacing focado na antecipação do espectador.',
+              software: 'Adobe Premiere Pro',
+              format: '4K • 2.39:1'
+            },
+            {
+              id: 4,
+              title: 'Natureza Morta',
+              shortTitle: 'Nat. Morta',
+              sceneSlug: 'INT. CONTEMPLAÇÃO & TEXTURA - CORTE SECO',
+              categoryLabel: 'Curta Experimental',
+              role: 'Edição & Pós-produção',
+              year: '2023',
+              duration: 'Experimental',
+              youtubeId: 'PeV4sFPK3Ng',
+              image: 'https://img.youtube.com/vi/PeV4sFPK3Ng/maxresdefault.jpg',
+              description: 'Exploração estética de formas, iluminação e texturas visuais. Ritmo cadenciado e valorização do silêncio e composição espacial.',
+              software: 'Premiere Pro',
+              format: 'FHD • 16:9'
+            },
+            {
+              id: 5,
+              title: 'Doce',
+              shortTitle: 'Doce',
+              sceneSlug: 'INT/EXT. NARRATIVA & CONTRASTES - CENA',
+              categoryLabel: 'Curta Autoral',
+              role: 'Edição & Finalização',
+              year: '2022',
+              duration: 'Curta-metragem',
+              youtubeId: 'JMiOs47C8DE',
+              image: 'https://img.youtube.com/vi/JMiOs47C8DE/maxresdefault.jpg',
+              description: 'Projeto audiovisual com ênfase na dinâmica entre personagens, cortes reativos aos diálogos e desenho rítmico expressivo.',
+              software: 'Adobe Premiere Pro',
+              format: 'FHD • 16:9'
+            },
+            {
+              id: 6,
+              title: 'Destilando',
+              shortTitle: 'Destilando',
+              sceneSlug: 'INT. PROCESSO & MOVIMENTO - RITMO VISUAL',
+              categoryLabel: 'Produção Audiovisual',
+              role: 'Edição & Montagem',
+              year: '2022',
+              duration: 'Curta / Dinâmico',
+              youtubeId: '19-zPghLg00',
+              image: 'https://img.youtube.com/vi/19-zPghLg00/maxresdefault.jpg',
+              description: 'Edição rítmica acompanhando processos e movimento, alternando planos detalhe com planos gerais para imprimir dinamismo.',
+              software: 'Premiere + After Effects',
+              format: 'FHD • 16:9'
+            },
+            {
+              id: 7,
+              title: 'A Herdeira',
+              shortTitle: 'A Herdeira',
+              sceneSlug: 'INT. DRAMA & ENCRUZILHADA - CLÍMAX',
+              categoryLabel: 'Curta Dramático',
+              role: 'Montagem Cinematográfica',
+              year: '2021',
+              duration: 'Ficção Dramática',
+              youtubeId: 'OBR85PPCEN8',
+              image: 'https://img.youtube.com/vi/OBR85PPCEN8/maxresdefault.jpg',
+              description: 'Trama dramática conduzida por atuação e subtexto, onde a montagem valoriza o olhar, as pausas e as decisões dos personagens.',
+              software: 'Adobe Premiere Pro',
+              format: 'FHD • 2.39:1'
+            }
+          ],
+
+          get currentProject() {
+            return scope.projects[scope.currentProjectIndex] || scope.projects[0];
+          },
+
+          nextProject() {
+            scope.currentProjectIndex = (scope.currentProjectIndex + 1) % scope.projects.length;
+          },
+          prevProject() {
+            scope.currentProjectIndex = (scope.currentProjectIndex - 1 + scope.projects.length) % scope.projects.length;
+          },
+
+          // Modal
+          selectedProject: null,
+          openModal(item) {
+            scope.selectedProject = item;
+            const modal = document.getElementById('project_modal');
+            if (modal) modal.showModal();
+          },
+          closeModal() {
+            scope.selectedProject = null;
+            const modal = document.getElementById('project_modal');
+            if (modal) modal.close();
+          },
+
+          // Formulário de Contato -> WhatsApp
+          form: {
+            name: '',
+            email: '',
+            message: ''
+          },
+          handleSubmit() {
+            const phoneNumber = '5531995271426';
+            const emailLine = scope.form.email ? `\n*E-mail:* ${scope.form.email}` : '';
+            const text = `Olá, Jeferson! Vi seu portfólio de edição.\n\n*Nome:* ${scope.form.name}${emailLine}\n*Mensagem:* ${scope.form.message}`;
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(text)}`;
+            window.open(whatsappUrl, '_blank');
+            scope.form.name = '';
+            scope.form.email = '';
+            scope.form.message = '';
+          },
+
+          openDirectWhatsApp() {
+            window.open('https://api.whatsapp.com/send?phone=5531995271426&text=Ol%C3%A1%2C%20Jeferson!%20Gostaria%20de%20conversar%20sobre%20um%20projeto%20de%20edi%C3%A7%C3%A3o.', '_blank');
+          },
+
+          scrollFeedTop() {
+            const feed = document.querySelector('.mobile-feed-snap');
+            if (feed) feed.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+
+        // Timecode ticker a 24fps
+        const updateTc = () => {
+          scope.tcFrame++;
+          const fps = 24;
+          const totalSec = Math.floor(scope.tcFrame / fps);
+          const f = scope.tcFrame % fps;
+          const s = totalSec % 60;
+          const m = Math.floor((totalSec / 60) % 60);
+          const h = (1 + Math.floor(totalSec / 3600)) % 24;
+
+          const pad = (n) => String(n).padStart(2, '0');
+          scope.timecode = `${pad(h)}:${pad(m)}:${pad(s)}:${pad(f)}`;
+        };
+
+        onMounted(() => {
+          scope.tcInterval = setInterval(updateTc, 1000 / 24);
+        });
+
+        onUnmounted(() => {
+          if (scope.tcInterval) clearInterval(scope.tcInterval);
+        });
+
+        return scope;
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

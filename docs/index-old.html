@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark scroll-smooth" data-theme="cinemaDark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jeferson Silva | Edição & Audiovisual</title>
+  
+  <!-- Tipografia Moderna & Editorial: Space Grotesk, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Iconify CDN -->
+  <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+
+  <!-- DaisyUI CDN (CSS) -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            cinema: {
+              black: '#090a0c',
+              dark: '#111317',
+              surface: '#181b20',
+              border: '#262a33',
+              accent: '#f59e0b',
+              accentHover: '#d97706',
+              red: '#ef4444',
+            }
+          }
+        }
+      },
+      daisyui: {
+        themes: [
+          {
+            cinemaDark: {
+              "primary": "#f59e0b",
+              "secondary": "#d97706",
+              "accent": "#f59e0b",
+              "neutral": "#181b20",
+              "base-100": "#090a0c",
+              "base-200": "#111317",
+              "base-300": "#1e2229",
+              "info": "#38bdf8",
+              "success": "#34d399",
+              "warning": "#f59e0b",
+              "error": "#ef4444",
+              "--rounded-box": "0px",
+              "--rounded-btn": "0px",
+              "--rounded-badge": "0px",
+              "--animation-btn": "0.15s",
+              "--animation-input": "0.15s",
+              "--btn-focus-scale": "0.98",
+              "--border-btn": "1px",
+              "--tab-radius": "0px",
+            }
+          }
+        ]
+      }
+    }
+  </script>
+
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+  <style>
+    /* Forçar cantos retos e ausência de glassmorphism em todos os componentes DaisyUI */
+    *, ::before, ::after {
+      border-radius: 0px !important;
+    }
+
+    body {
+      background-color: #090a0c;
+      color: #e5e7eb;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Grid da Ilha de Corte */
+    .timeline-grid {
+      background-size: 50px 50px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    }
+
+    /* Granulação sutil de película */
+    .film-grain {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 99;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Scrollbar minimalista: Calha (track) 100% transparente, apenas a barrinha visível */
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: #2a2e38 transparent;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+      border: none;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #2a2e38;
+      border-radius: 0px;
+      transition: background 0.2s ease;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #e50914;
+    }
+
+    ::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+
+    /* Caixas sólidas e opacas */
+    .cut-box {
+      background-color: #111317;
+      border: 1px solid #262a33;
+    }
+    .cut-box:hover {
+      border-color: #3b4252;
+    }
+  </style>
+</head>
+<body class="selection:bg-amber-500 selection:text-black antialiased relative">
+
+  <!-- Efeito de película -->
+  <div class="film-grain"></div>
+
+  <div id="app" class="min-h-screen flex flex-col timeline-grid">
+    
+    <!-- HEADER / NAVBAR DAISYUI -->
+    <header class="sticky top-0 z-40 bg-[#090a0c] border-b border-cinema-border">
+      <div class="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 min-h-[5rem] p-0">
+        
+        <!-- Navbar Start (Logo) -->
+        <div class="navbar-start">
+          <a href="#" class="flex items-center gap-3 group">
+            <div class="w-10 h-10 bg-primary text-black flex items-center justify-center font-mono font-bold text-base tracking-tighter">
+              JS
+            </div>
+            <div>
+              <span class="block font-display font-bold text-base tracking-wider text-white uppercase group-hover:text-primary transition-colors">
+                {{ profile.name }}
+              </span>
+              <span class="block font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+                {{ profile.title }} • {{ profile.location }}
+              </span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Navbar Center (Menu Desktop) -->
+        <div class="navbar-center hidden md:flex">
+          <ul class="menu menu-horizontal px-1 gap-4 font-mono text-xs uppercase tracking-widest">
+            <li>
+              <a href="#trabalhos" class="text-zinc-400 hover:text-primary transition-colors">
+                <span class="text-primary text-[10px]">01.</span> Edições
+              </a>
+            </li>
+            <li>
+              <a href="#stack" class="text-zinc-400 hover:text-primary transition-colors">
+                <span class="text-primary text-[10px]">02.</span> Ferramentas & Código
+              </a>
+            </li>
+            <li>
+              <a href="#sobre" class="text-zinc-400 hover:text-primary transition-colors">
+                <span class="text-primary text-[10px]">03.</span> Sobre & Formação
+              </a>
+            </li>
+            <!-- <li>
+              <a href="#contato" class="text-zinc-400 hover:text-primary transition-colors">
+                <span class="text-primary text-[10px]">04.</span> Contato
+              </a>
+            </li> -->
+          </ul>
+        </div>
+
+        <!-- Navbar End (Timecode & CTA Button DaisyUI) -->
+        <div class="navbar-end gap-3">
+          <div class="badge badge-neutral hidden sm:flex items-center gap-2 px-3 py-3 border-cinema-border font-mono text-[11px] text-zinc-300 bg-black">
+            <span class="w-2 h-2 bg-error animate-pulse"></span>
+            <span class="text-zinc-500">TC:</span> {{ timecode }}
+          </div>
+          <a href="#contato" class="btn btn-primary btn-sm font-mono font-bold text-xs uppercase tracking-wider text-black">
+            <span>Iniciar Projeto</span>
+            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+          </a>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative border-b border-cinema-border overflow-hidden">
+      <!-- Metadados de Timeline -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-2 border-b border-cinema-border/50 flex flex-wrap justify-between items-center text-[11px] font-mono text-zinc-500">
+        <div class="flex items-center gap-4">
+          <span><strong class="text-zinc-300">BASE:</strong> BELO HORIZONTE, MG</span>
+          <span class="hidden sm:inline">|</span>
+          <span><strong class="text-zinc-300">MODALIDADE:</strong> REMOTO & PRESENCIAL</span>
+          <span class="hidden md:inline">|</span>
+          <span class="hidden md:inline"><strong class="text-zinc-300">FOCO:</strong> NARRATIVA & CORTE DINÂMICO</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="badge badge-success badge-sm text-[10px] gap-1 font-mono">
+            <i class="fa-solid fa-circle text-[6px]"></i> DISPONÍVEL PARA EDITAL & JOBS
+          </div>
+          <span class="text-zinc-600">|</span>
+          <span>24/30 FPS</span>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20 grid lg:grid-cols-12 gap-10 items-center">
+        <!-- Texto Principal Hero -->
+        <div class="lg:col-span-7 space-y-5">
+          <div class="badge badge-outline badge-primary font-mono text-xs uppercase tracking-widest gap-2 py-3 px-3">
+            <i class="fa-solid fa-scissors"></i>
+            <span>Edição de Vídeo • Ritmo • Narrativa Audiovisual</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl font-display font-bold uppercase tracking-tight text-white leading-tight">
+            Dando forma, ritmo e sentimento <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-200 to-zinc-400">
+              a cada corte cinematográfico.
+            </span>
+          </h1>
+
+          <p class="text-zinc-400 text-sm sm:text-base max-w-xl font-normal leading-relaxed">
+            Olá, sou <strong>{{ profile.name }}</strong>, editor e realizador audiovisual baseado em Belo Horizonte. Uno a sensibilidade narrativa da minha formação em cinema com agilidade moderna em Premiere Pro, After Effects e novas abordagens programáticas em vídeo como Remotion e Hyperframes.
+          </p>
+
+          <div class="pt-2 flex flex-wrap gap-4 items-center">
+            <a href="#trabalhos" class="btn btn-primary font-mono font-bold text-xs uppercase tracking-widest text-black">
+              Ver Trabalhos Editados
+            </a>
+            <a href="#stack" class="btn btn-outline border-cinema-border text-zinc-300 hover:bg-zinc-800 hover:border-zinc-400 font-mono text-xs uppercase tracking-widest">
+              Softwares & Tecnologias
+            </a>
+          </div>
+
+          <!-- Destaques Rápidos -->
+          <div class="pt-6 grid grid-cols-3 gap-4 border-t border-cinema-border/60 font-mono text-xs">
+            <div>
+              <p class="text-xl font-bold font-display text-white">Graduação</p>
+              <p class="text-zinc-500 uppercase text-[10px] mt-1">Cinema & Audiovisual</p>
+            </div>
+            <div>
+              <p class="text-xl font-bold font-display text-white">NLE + Code</p>
+              <p class="text-zinc-500 uppercase text-[10px] mt-1">Premiere, AE & Remotion</p>
+            </div>
+            <div>
+              <p class="text-xl font-bold font-display text-white">BH / Remoto</p>
+              <p class="text-zinc-500 uppercase text-[10px] mt-1">Produções no Brasil</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monitor / Simulação de Timeline -->
+        <div class="lg:col-span-5">
+          <div class="cut-box p-3 bg-cinema-dark relative">
+            <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-primary"></div>
+            <div class="absolute top-2 right-2 w-3 h-3 border-t border-r border-primary"></div>
+            <div class="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-primary"></div>
+            <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-primary"></div>
+
+            <!-- Janela de Programa com Play Centralizado -->
+            <div class="relative aspect-video overflow-hidden bg-black">
+              <img 
+                src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1200&q=80" 
+                alt="Ilha de Edição" 
+                class="w-full h-full object-cover opacity-80 grayscale-[20%]"
+              />
+
+              <!-- Botão de Play Perfeitamente Centralizado -->
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <button 
+                  @click="openModal(featuredReel)" 
+                  class="pointer-events-auto btn btn-outline btn-primary btn-square w-16 h-16 bg-black/85 hover:bg-primary hover:text-white border-primary shadow-xl flex items-center justify-center transition-all duration-200"
+                >
+                  <i class="fa-solid fa-play text-xl ml-1 text-white"></i>
+                </button>
+              </div>
+
+              <div class="badge badge-neutral text-[9px] absolute bottom-2 left-2 font-mono text-zinc-300 bg-black/90 border-zinc-800">
+                PROGRAM MONITOR // REEL
+              </div>
+            </div>
+
+            <!-- Trilhas de Timeline -->
+            <div class="mt-3 pt-2 border-t border-cinema-border space-y-1.5 font-mono text-[10px]">
+              <div class="flex items-center gap-2 text-zinc-400">
+                <span class="w-6 text-[9px] text-amber-500 font-bold">V2</span>
+                <div class="flex-1 h-3 bg-zinc-900 border border-zinc-800 flex gap-1 px-1 py-0.5">
+                  <div class="w-1/3 bg-purple-900/60 border border-purple-700/80"></div>
+                  <div class="w-1/4 bg-purple-900/60 border border-purple-700/80"></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 text-zinc-400">
+                <span class="w-6 text-[9px] text-amber-500 font-bold">V1</span>
+                <div class="flex-1 h-3 bg-zinc-900 border border-zinc-800 flex gap-1 px-1 py-0.5">
+                  <div class="w-1/4 bg-blue-900/60 border border-blue-700/80"></div>
+                  <div class="w-1/2 bg-blue-900/60 border border-blue-700/80"></div>
+                  <div class="w-1/4 bg-blue-900/60 border border-blue-700/80"></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 text-zinc-400">
+                <span class="w-6 text-[9px] text-emerald-500 font-bold">A1</span>
+                <div class="flex-1 h-2 bg-zinc-900 border border-zinc-800 flex gap-1 px-1">
+                  <div class="w-full bg-emerald-900/50"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-2 flex items-center justify-between font-mono text-[10px] text-zinc-500">
+              <span>PREMIERE + AE WORKFLOW</span>
+              <span class="text-amber-500">23.976 FPS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRABALHOS EDITADOS / PORTFÓLIO -->
+    <section id="trabalhos" class="py-16 border-b border-cinema-border">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+          <div>
+            <div class="font-mono text-xs uppercase text-amber-500 tracking-widest mb-1">
+              [ 01 // FILMOGRAFIA & CORTES ]
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-display font-bold uppercase tracking-tight text-white">
+              Projetos & Edições
+            </h2>
+            <p class="text-zinc-400 text-xs sm:text-sm mt-1 max-w-xl">
+              Navegue pelos projetos editados e montados — desde narrativas autorais a formatos dinâmicos para redes e videoclipes.
+            </p>
+          </div>
+
+          <!-- Filtro de Categorias (Botões DaisyUI Join) -->
+          <div class="join flex-wrap">
+            <button 
+              v-for="cat in categories" 
+              :key="cat.id"
+              @click="activeCategory = cat.id"
+              :class="activeCategory === cat.id 
+                ? 'btn-primary text-black font-bold' 
+                : 'btn-outline border-cinema-border text-zinc-400 hover:text-white'"
+              class="btn btn-sm join-item font-mono uppercase tracking-wider text-xs"
+            >
+              {{ cat.name }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Grade de Projetos DaisyUI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div 
+            v-for="item in filteredProjects" 
+            :key="item.id"
+            class="card cut-box group cursor-pointer transition-colors duration-200"
+            @click="openModal(item)"
+          >
+            <!-- Thumbnail 16:9 -->
+            <figure class="relative aspect-video overflow-hidden bg-black border-b border-cinema-border m-0">
+              <img 
+                :src="item.image" 
+                :alt="item.title"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out opacity-90"
+              />
+              
+              <div class="badge badge-neutral text-[10px] absolute top-2 left-2 font-mono uppercase bg-black/90 border-cinema-border text-zinc-300">
+                {{ item.role }}
+              </div>
+
+              <div class="badge badge-neutral text-[10px] absolute bottom-2 right-2 font-mono bg-black/90 border-cinema-border text-amber-400">
+                {{ item.duration }}
+              </div>
+            </figure>
+
+            <!-- Card Body DaisyUI -->
+            <div class="card-body p-5">
+              <div class="flex items-center justify-between font-mono text-[11px] text-zinc-500 mb-1">
+                <span>{{ item.year }}</span>
+                <span>CAT: {{ item.categoryLabel }}</span>
+              </div>
+              <h3 class="card-title text-lg font-display font-bold text-white group-hover:text-primary transition-colors uppercase tracking-tight">
+                {{ item.title }}
+              </h3>
+              <p class="text-zinc-400 text-xs mt-1 line-clamp-2 leading-relaxed">
+                {{ item.description }}
+              </p>
+
+              <!-- Badges de Especificações Técnicas -->
+              <div class="card-actions justify-start mt-3 pt-3 border-t border-cinema-border/70 gap-2">
+                <span class="badge badge-neutral text-[10px] font-mono border-cinema-border">{{ item.software }}</span>
+                <span class="badge badge-neutral text-[10px] font-mono border-cinema-border">{{ item.format }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SOFTWARES, FERRAMENTAS & VÍDEO PROGRAMÁTICO -->
+    <section id="stack" class="py-16 border-b border-cinema-border bg-cinema-dark/40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="max-w-2xl mb-10">
+          <div class="font-mono text-xs uppercase text-amber-500 tracking-widest mb-1">
+            [ 02 // SUÍTE DE EDIÇÃO & TECNOLOGIAS ]
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-display font-bold uppercase tracking-tight text-white">
+            Ferramentas & Fluxo de Trabalho
+          </h2>
+          <p class="text-zinc-400 text-xs sm:text-sm mt-1">
+            Combinação do ambiente clássico de montagem não-linear com o futuro do vídeo gerado por código e motion design.
+          </p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <!-- Premiere Pro -->
+          <div class="cut-box p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="badge badge-primary badge-outline text-[10px] font-mono font-bold">NLE PRINCIPAL</span>
+              <i class="fa-solid fa-film text-zinc-500"></i>
+            </div>
+            <h4 class="font-display font-bold text-lg text-white uppercase">Adobe Premiere Pro</h4>
+            <p class="text-zinc-400 text-xs leading-relaxed">
+              Edição não-linear, decupagem, sincronização de áudio multicanal, corte de ritmo dramático e conforming.
+            </p>
+            <div class="pt-2 font-mono text-[10px] text-zinc-500 border-t border-cinema-border">
+              USO: CURTAS, DOCS & CLIPS
+            </div>
+          </div>
+
+          <!-- After Effects -->
+          <div class="cut-box p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="badge badge-info badge-outline text-[10px] font-mono font-bold">MOTION & FX</span>
+              <i class="fa-solid fa-wand-magic-sparkles text-zinc-500"></i>
+            </div>
+            <h4 class="font-display font-bold text-lg text-white uppercase">After Effects</h4>
+            <p class="text-zinc-400 text-xs leading-relaxed">
+              Tratamento gráfico, tipografia cinética, transições refinadas, rotoscopia e pós-produção visual para vídeos autorais e redes.
+            </p>
+            <div class="pt-2 font-mono text-[10px] text-zinc-500 border-t border-cinema-border">
+              USO: MOTION GRAPHICS & IDENTIDADE
+            </div>
+          </div>
+
+          <!-- Remotion -->
+          <div class="cut-box p-5 space-y-3 border-amber-500/50">
+            <div class="flex items-center justify-between">
+              <span class="badge badge-warning text-black text-[10px] font-mono font-bold">CODE VIDEO (REACT)</span>
+              <i class="fa-solid fa-code text-amber-500"></i>
+            </div>
+            <h4 class="font-display font-bold text-lg text-white uppercase">Remotion</h4>
+            <p class="text-zinc-400 text-xs leading-relaxed">
+              Criação de vídeos programáticos usando React e JavaScript. Animações reproduzíveis, automação e sincronia precisa com áudio.
+            </p>
+            <div class="pt-2 font-mono text-[10px] text-amber-500/80 border-t border-cinema-border">
+              EM ESTUDO & IMPLEMENTAÇÃO
+            </div>
+          </div>
+
+          <!-- Hyperframes -->
+          <div class="cut-box p-5 space-y-3 border-amber-500/50">
+            <div class="flex items-center justify-between">
+              <span class="badge badge-warning text-black text-[10px] font-mono font-bold">NOVA TENDÊNCIA</span>
+              <i class="fa-solid fa-layer-group text-amber-500"></i>
+            </div>
+            <h4 class="font-display font-bold text-lg text-white uppercase">Hyperframes</h4>
+            <p class="text-zinc-400 text-xs leading-relaxed">
+              Pesquisa e experimentação com frameworks modernos de geração visual, composição em camadas e novos formatos audiovisuais.
+            </p>
+            <div class="pt-2 font-mono text-[10px] text-amber-500/80 border-t border-cinema-border">
+              PESQUISA & INOVAÇÃO CONTÍNUA
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Alerta Informativo DaisyUI -->
+        <div class="alert cut-box mt-8 bg-cinema-black border border-cinema-border font-mono text-xs text-zinc-400 flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-circle-nodes text-primary text-base"></i>
+            <span><strong>Integração Híbrida:</strong> Da montagem cinematográfica tradicional ao desenvolvimento de automações de vídeo digital.</span>
+          </div>
+          <span class="badge badge-neutral text-zinc-500 text-[10px]">BH // WORKFLOW HÍBRIDO</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SOBRE & FORMAÇÃO -->
+    <section id="sobre" class="py-16 border-b border-cinema-border">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="grid lg:grid-cols-12 gap-10 items-center">
+          
+          <div class="lg:col-span-5">
+            <div class="cut-box p-3 bg-cinema-dark">
+              <div class="aspect-[4/5] bg-black relative overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80" 
+                  alt="Jeferson Silva - Edição" 
+                  class="w-full h-full object-cover grayscale contrast-125 opacity-90"
+                />
+                <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black via-black/80 to-transparent p-5">
+                  <h4 class="font-display font-bold text-xl text-white uppercase">{{ profile.name }}</h4>
+                  <p class="font-mono text-xs text-amber-400">{{ profile.roleDesc }}</p>
+                  <p class="font-mono text-[11px] text-zinc-400 mt-1">{{ profile.cityState }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 space-y-5">
+            <div class="font-mono text-xs uppercase text-amber-500 tracking-widest">
+              [ 03 // TRAJETÓRIA & FORMAÇÃO ]
+            </div>
+            
+            <h2 class="text-2xl sm:text-3xl font-display font-bold uppercase tracking-tight text-white leading-tight">
+              A montagem como o "terceiro roteiro" de um filme.
+            </h2>
+            
+            <p class="text-zinc-300 text-sm leading-relaxed">
+              Com formação acadêmica em <strong>Cinema e Audiovisual / Produção Multimídia</strong>, encontro na ilha de edição o momento onde a ideia original e a gravação se encontram para criar significado real.
+            </p>
+
+            <p class="text-zinc-400 text-sm leading-relaxed">
+              Acredito que o bom corte não é apenas sobre emendar planos, mas sobre respeitar a respiração dos personagens, criar tensão quando necessário e garantir que o espectador seja transportado pela história — seja num curta autoral exibido em tela grande, seja num vídeo dinâmico para redes sociais.
+            </p>
+
+            <div class="grid sm:grid-cols-2 gap-4 pt-2 font-mono text-xs">
+              <div class="border border-cinema-border p-4 bg-cinema-dark">
+                <span class="text-amber-500 block font-bold text-xs">FORMAÇÃO ACADÊMICA</span>
+                <span class="text-white text-sm mt-1 block">Graduação em Cinema & Audiovisual</span>
+                <span class="text-zinc-500 text-[11px] block mt-0.5">Produção Multimídia e Linguagem Visual</span>
+              </div>
+              <div class="border border-cinema-border p-4 bg-cinema-dark">
+                <span class="text-amber-500 block font-bold text-xs">INTERESSE ARTÍSTICO</span>
+                <span class="text-white text-sm mt-1 block">Ficção, Clipes & Novas Mídias</span>
+                <span class="text-zinc-500 text-[11px] block mt-0.5">Curtas, videoclipes e narrativas modernas</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CONTATO / FORMULÁRIO COM ELEMENTOS DAISYUI -->
+    <section id="contato" class="py-16">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="cut-box p-8 sm:p-12 border-2 border-primary bg-cinema-dark">
+          <div class="text-center max-w-xl mx-auto mb-8">
+            <div class="badge badge-primary text-white font-mono font-bold text-[11px] uppercase tracking-widest mb-2 py-3 px-3">
+              CANAL DIRETO // VAMOS COLABORAR
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-display font-bold text-white uppercase tracking-tight">
+              Tem um projeto precisando de edição?
+            </h2>
+            <p class="text-zinc-400 text-xs sm:text-sm mt-2">
+              Seja para um curta-metragem autoral, videoclipe, projeto para redes ou automação de vídeo com código, entre em contato.
+            </p>
+          </div>
+
+          <!-- Confirmação de Envio (DaisyUI Alert) -->
+          <div v-if="submitted" class="alert alert-success cut-box bg-emerald-950/60 border border-emerald-500 p-6 text-center space-y-3 font-mono block">
+            <i class="fa-solid fa-circle-check text-emerald-400 text-3xl"></i>
+            <h3 class="text-white font-bold text-base">MENSAGEM RECEBIDA!</h3>
+            <p class="text-zinc-300 text-xs">Obrigado pelo contato! Retornarei o mais breve possível para conversarmos sobre a edição.</p>
+            <button @click="submitted = false" class="btn btn-sm btn-primary text-black font-bold uppercase tracking-wider mt-2">
+              Enviar outra mensagem
+            </button>
+          </div>
+
+          <!-- Formulário com Inputs DaisyUI simplificado: Nome, E-mail e Mensagem -->
+          <form @submit.prevent="handleSubmit" class="space-y-5">
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div class="form-control w-full">
+                <label class="label p-1">
+                  <span class="label-text font-mono text-[11px] uppercase text-zinc-300 tracking-wider">Seu Nome / Produtora *</span>
+                </label>
+                <input 
+                  type="text" 
+                  v-model="form.name" 
+                  required
+                  placeholder="Seu nome ou empresa"
+                  class="input input-bordered w-full bg-cinema-black border-cinema-border text-white text-sm focus:border-primary"
+                />
+              </div>
+
+              <div class="form-control w-full">
+                <label class="label p-1">
+                  <span class="label-text font-mono text-[11px] uppercase text-zinc-300 tracking-wider">E-mail de Contato (opcional)</span>
+                </label>
+                <input 
+                  type="email" 
+                  v-model="form.email" 
+                  placeholder="seuemail@exemplo.com"
+                  class="input input-bordered w-full bg-cinema-black border-cinema-border text-white text-sm focus:border-primary"
+                />
+              </div>
+            </div>
+
+            <div class="form-control w-full">
+              <label class="label p-1">
+                <span class="label-text font-mono text-[11px] uppercase text-zinc-300 tracking-wider">Mensagem sobre o Projeto *</span>
+              </label>
+              <textarea 
+                v-model="form.message"
+                rows="4"
+                required
+                placeholder="Conte sobre o projeto, formato, prazo ou ideia de edição..."
+                class="textarea textarea-bordered w-full bg-cinema-black border-cinema-border text-white text-sm focus:border-primary"
+              ></textarea>
+            </div>
+
+            <div>
+              <button 
+                type="submit" 
+                class="btn btn-primary w-full font-mono font-bold text-xs uppercase tracking-widest text-white flex items-center justify-center gap-2 hover:bg-red-700"
+              >
+                <span class="iconify text-xl" data-icon="logos:whatsapp-icon"></span>
+                <span>Falar Diretamente no WhatsApp</span>
+              </button>
+            </div>
+          </form>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DAISYUI DIALOG MODAL NATIVO (HTML5 <dialog class="modal">) -->
+    <dialog id="project_modal" class="modal bg-black/90">
+      <div v-if="selectedProject" class="modal-box max-w-3xl w-full p-0 cut-box bg-[#111317] border border-cinema-border">
+        
+        <!-- Header Técnico do Modal -->
+        <div class="px-5 py-3 bg-black border-b border-cinema-border flex items-center justify-between font-mono text-xs">
+          <div class="flex items-center gap-3">
+            <span class="w-2 h-2 bg-error animate-pulse"></span>
+            <span class="text-white font-bold tracking-wider">{{ selectedProject.title }}</span>
+            <span class="text-zinc-500 hidden sm:inline">// {{ selectedProject.categoryLabel }}</span>
+          </div>
+          <form method="dialog">
+            <button @click="closeModal" class="btn btn-sm btn-ghost btn-square text-zinc-400 hover:text-white">
+              <i class="fa-solid fa-xmark text-base"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- Video Frame / Player -->
+        <div class="relative aspect-video bg-black">
+          <img 
+            :src="selectedProject.image" 
+            :alt="selectedProject.title"
+            class="w-full h-full object-cover"
+          />
+          <div class="absolute inset-0 flex items-center justify-center">
+            <button class="btn btn-outline btn-primary btn-square w-16 h-16 bg-black/80">
+              <i class="fa-solid fa-play text-xl ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Conteúdo do Projeto -->
+        <div class="p-6 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-4 border-b border-cinema-border pb-3">
+            <div>
+              <h3 class="text-xl font-display font-bold text-white uppercase">{{ selectedProject.title }}</h3>
+              <p class="font-mono text-xs text-amber-500 mt-0.5">Função: {{ selectedProject.role }} • {{ selectedProject.year }}</p>
+            </div>
+            <div class="badge badge-neutral font-mono text-xs py-3 px-3 bg-black border-cinema-border text-zinc-300">
+              Duração: {{ selectedProject.duration }}
+            </div>
+          </div>
+
+          <p class="text-zinc-300 text-sm leading-relaxed">
+            {{ selectedProject.description }}
+          </p>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 font-mono text-[11px]">
+            <div class="p-2 bg-cinema-black border border-cinema-border">
+              <span class="text-zinc-500 block text-[9px] uppercase">SOFTWARE / PIPELINE</span>
+              <span class="text-zinc-200">{{ selectedProject.software }}</span>
+            </div>
+            <div class="p-2 bg-cinema-black border border-cinema-border">
+              <span class="text-zinc-500 block text-[9px] uppercase">FORMATO DE SAÍDA</span>
+              <span class="text-zinc-200">{{ selectedProject.format }}</span>
+            </div>
+            <div class="p-2 bg-cinema-black border border-cinema-border">
+              <span class="text-zinc-500 block text-[9px] uppercase">STATUS DO PROJETO</span>
+              <span class="text-zinc-200">Finalizado / Master</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ações do Modal -->
+        <div class="modal-action px-6 py-3 bg-black border-t border-cinema-border m-0">
+          <form method="dialog">
+            <button @click="closeModal" class="btn btn-sm btn-outline border-cinema-border font-mono text-xs uppercase tracking-wider text-zinc-300 hover:text-white">
+              Fechar
+            </button>
+          </form>
+        </div>
+
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button @click="closeModal">fechar</button>
+      </form>
+    </dialog>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto bg-black border-t border-cinema-border font-mono text-xs text-zinc-500">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2 text-white font-display font-bold tracking-wider uppercase text-sm">
+          <span class="w-5 h-5 bg-primary text-black flex items-center justify-center text-[10px] font-mono">JS</span>
+          JEFERSON SILVA // EDIÇÃO & CINEMA
+        </div>
+
+        <div class="text-[11px] text-zinc-500 text-center sm:text-right">
+          Belo Horizonte - Minas Gerais • Brasil & Remoto
+        </div>
+      </div>
+      <div class="border-t border-cinema-border/40 py-3 text-center text-[10px] text-zinc-600">
+        &copy; 2026 Jeferson Silva. Todos os direitos reservados.
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- VUE 3 APPLICATION SCRIPT COM reactive(scope) -->
+  <script>
+    const { createApp, reactive, onMounted, onUnmounted } = Vue;
+
+    createApp({
+      setup() {
+        const scope = reactive({
+          // Informações Pessoais & Perfil
+          profile: {
+            name: 'Jeferson Silva',
+            title: 'Editor de Vídeo & Cinema',
+            location: 'Belo Horizonte, MG',
+            cityState: 'Belo Horizonte - MG, Brasil',
+            roleDesc: 'Edição de Vídeo • Montagem • Motion & Video Code'
+          },
+
+          // Timecode dinâmico estilo cinema (24fps)
+          timecode: '01:00:00:00',
+          tcFrame: 0,
+          tcInterval: null,
+
+          // Categorias de Trabalhos Editados
+          categories: [
+            { id: 'all', name: 'Todos' },
+            { id: 'curtas', name: 'Curtas & Autoral' },
+            { id: 'redes', name: 'Redes Sociais' },
+            { id: 'clipes', name: 'Videoclipes' },
+            { id: 'experimental', name: 'Experimental / Code' }
+          ],
+          activeCategory: 'all',
+
+          // Lista de Trabalhos Realizados / Editados
+          projects: [
+            {
+              id: 1,
+              title: 'Noturno em Belo Horizonte',
+              category: 'curtas',
+              categoryLabel: 'Curta Autoral',
+              role: 'Montagem & Edição',
+              year: '2025',
+              duration: '14 min',
+              image: 'https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?auto=format&fit=crop&w=900&q=80',
+              description: 'Curta ficcional explorando as madrugadas silenciosas do centro de BH. Trabalho minucioso de decupagem e ritmo com montagem paralela.',
+              software: 'Adobe Premiere Pro',
+              format: '4K DCI • 2.39:1'
+            },
+            {
+              id: 2,
+              title: 'Sons da Cidade: Episódio Piloto',
+              category: 'redes',
+              categoryLabel: 'Conteúdo Dinâmico',
+              role: 'Edição & Motion',
+              year: '2025',
+              duration: '02:30 min',
+              image: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=900&q=80',
+              description: 'Formato dinâmico em 9:16 e 16:9 para canais digitais, com tipografia cinética personalizada em After Effects e cortes acelerados na batida.',
+              software: 'Premiere + After Effects',
+              format: 'FHD • 9:16 Vertical & 16:9'
+            },
+            {
+              id: 3,
+              title: 'Luzes da Serra',
+              category: 'clipes',
+              categoryLabel: 'Videoclipe',
+              role: 'Edição & Ritmo',
+              year: '2024',
+              duration: '03:45 min',
+              image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=900&q=80',
+              description: 'Videoclipe com sincronia labial rápida e sobreposições rítmicas com iluminação neon. Concepção visual e edição de impacto.',
+              software: 'Adobe Premiere Pro',
+              format: '4K UHD • 16:9'
+            },
+            {
+              id: 4,
+              title: 'Motion Data Stream',
+              category: 'experimental',
+              categoryLabel: 'Vídeo com Código',
+              role: 'Remotion / Code Video',
+              year: '2025',
+              duration: '01:15 min',
+              image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=900&q=80',
+              description: 'Experimento prático utilizando Remotion (React) para gerar visualização de dados e transições programáticas em tempo real.',
+              software: 'Remotion (React) + JS',
+              format: 'Render Programático 60 FPS'
+            },
+            {
+              id: 5,
+              title: 'Crônicas do Barro Preto',
+              category: 'curtas',
+              categoryLabel: 'Ensaio Documental',
+              role: 'Edição de Som & Imagem',
+              year: '2024',
+              duration: '11 min',
+              image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=900&q=80',
+              description: 'Montagem documental sobre a história e os ofícios tradicionais da região central de BH. Foco no diálogo e depoimentos emotivos.',
+              software: 'Adobe Premiere Pro',
+              format: '2K • 1.85:1'
+            },
+            {
+              id: 6,
+              title: 'Reels Cine Series',
+              category: 'redes',
+              categoryLabel: 'Social Media',
+              role: 'Edição & Color',
+              year: '2025',
+              duration: '45 seg',
+              image: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=900&q=80',
+              description: 'Série de pílulas audiovisuais com retenção inicial forte, legendas estilizadas e sound design para impacto no Instagram e TikTok.',
+              software: 'Premiere + After Effects',
+              format: 'Vertical 1080x1920'
+            }
+          ],
+
+          // Projeto em destaque no Player da Hero
+          featuredReel: {
+            title: 'JEFERSON SILVA // EDIT REEL',
+            categoryLabel: 'Destaque Geral',
+            role: 'Montagem & Edição',
+            year: '2025/2026',
+            duration: '02:15 min',
+            image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1200&q=80',
+            description: 'Recorte dos principais cortes em curtas-metragens, clipes musicais e formatos para redes sociais editados por Jeferson Silva.',
+            software: 'Adobe Premiere Pro & After Effects',
+            format: '4K UHD • 23.976 FPS'
+          },
+
+          // Controle do Modal DaisyUI Dialog
+          selectedProject: null,
+          openModal(item) {
+            scope.selectedProject = item;
+            const modal = document.getElementById('project_modal');
+            if (modal) modal.showModal();
+          },
+          closeModal() {
+            scope.selectedProject = null;
+            const modal = document.getElementById('project_modal');
+            if (modal) modal.close();
+          },
+
+          // Getter computado para projetos filtrados
+          get filteredProjects() {
+            if (scope.activeCategory === 'all') {
+              return scope.projects;
+            }
+            return scope.projects.filter(p => p.category === scope.activeCategory);
+          },
+
+          // Formulário de Contato (Nome, E-mail, Mensagem -> WhatsApp)
+          form: {
+            name: '',
+            email: '',
+            message: ''
+          },
+          submitted: false,
+          handleSubmit() {
+            const phoneNumber = '5531995271426';
+            const emailLine = scope.form.email ? `\n*E-mail:* ${scope.form.email}` : '';
+            const text = `Olá, Jeferson! Vi seu portfólio de cinema e edição.\n\n*Nome:* ${scope.form.name}${emailLine}\n*Mensagem:* ${scope.form.message}`;
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(text)}`;
+            
+            // Redireciona diretamente para o WhatsApp com a mensagem montada
+            window.open(whatsappUrl, '_blank');
+
+            // Limpa os campos do formulário
+            scope.form.name = '';
+            scope.form.email = '';
+            scope.form.message = '';
+          }
+        });
+
+        // Atualização de Timecode a 24fps
+        const updateTc = () => {
+          scope.tcFrame++;
+          const fps = 24;
+          const totalSec = Math.floor(scope.tcFrame / fps);
+          const f = scope.tcFrame % fps;
+          const s = totalSec % 60;
+          const m = Math.floor((totalSec / 60) % 60);
+          const h = (1 + Math.floor(totalSec / 3600)) % 24;
+
+          const pad = (n) => String(n).padStart(2, '0');
+          scope.timecode = `${pad(h)}:${pad(m)}:${pad(s)}:${pad(f)}`;
+        };
+
+        onMounted(() => {
+          scope.tcInterval = setInterval(updateTc, 1000 / 24);
+        });
+
+        onUnmounted(() => {
+          if (scope.tcInterval) clearInterval(scope.tcInterval);
+        });
+
+        return scope;
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
