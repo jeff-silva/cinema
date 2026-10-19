@@ -82,8 +82,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Iconify Web Component CDN (SVG autônomo sem conflito de fontes) -->
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
 
   <!-- DaisyUI CDN (CSS) -->
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
@@ -98,7 +98,7 @@
           fontFamily: {
             sans: ['"Courier Prime"', 'Courier', 'monospace'],
             serif: ['"Courier Prime"', 'Courier', 'monospace'],
-            mono: ['"Courier Prime"', '"JetBrains Mono"', 'monospace'],
+            mono: ['"Courier Prime"', 'Courier', 'monospace'],
             screenplay: ['"Courier Prime"', 'Courier', 'monospace'],
           },
           colors: {
@@ -139,18 +139,10 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 
   <style>
-    /* Tipografia Monospace Universal em absolutamente todos os textos */
-    *, html, body, header, footer, nav, main, input, button, textarea, select, p, span, h1, h2, h3, h4, h5, h6, a, div {
+    /* Tipografia Monospace Universal em absolutamente todos os elementos */
+    *, ::before, ::after, html, body, input, button, textarea, select {
       font-family: 'Courier Prime', Courier, monospace !important;
-    }
-
-    *, ::before, ::after {
       border-radius: 0px !important;
-    }
-
-    /* Preservar fonte original do Font Awesome apenas nos ícones */
-    i, .fa, .fas, .far, .fab, .fa-solid, .fa-regular, .fa-brands, [class*="fa-"] {
-      font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
     }
 
     body {
@@ -238,13 +230,13 @@
       pointer-events: none;
     }
 
-    /* Granulação analógica de película com movimento orgânico a 12fps */
+    /* Granulação analógica de película com movimento orgânico a 12fps (apenas nas telas de título e créditos) */
     .film-grain {
-      position: fixed;
+      position: absolute;
       top: -50%; left: -50%; width: 200%; height: 200%;
       pointer-events: none;
-      z-index: 99;
-      opacity: 0.045;
+      z-index: 15;
+      opacity: 0.05;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
       animation: film-grain-shift 0.5s steps(6) infinite;
     }
@@ -295,8 +287,6 @@
 </head>
 <body class="selection:bg-red-600 selection:text-white antialiased h-full">
 
-  <div class="film-grain"></div>
-
   <div id="app" v-cloak class="h-full flex flex-col">
 
     <!-- ============================================================= -->
@@ -309,9 +299,11 @@
       
       <!-- Topo: Título à esquerda & Menu em colchetes com [ Início ] à direita -->
       <header class="flex items-center justify-between font-screenplay text-sm lg:text-base tracking-wider shrink-0 pb-3 w-full">
-        <a href="#" @click.prevent="navigate('inicio')" class="text-white font-bold hover:text-primary transition-colors flex items-center gap-2">
+        <span></span>
+        
+        <!-- <a href="#" @click.prevent="navigate('inicio')" class="text-white font-bold hover:text-primary transition-colors flex items-center gap-2">
           <span>Jeferson Silva - Edição</span>
-        </a>
+        </a> -->
 
         <!-- Menu Desktop: Início, Sobre, Projetos, Contato -->
         <nav class="flex items-center gap-1.5 text-zinc-300">
@@ -361,6 +353,9 @@
             key="inicio" 
             class="w-full h-full relative flex items-center justify-center p-6 lg:p-12 bg-black text-white select-none overflow-hidden"
           >
+            <!-- Granulação analógica de película viva nos títulos -->
+            <div class="film-grain"></div>
+
             <!-- Scanlines analógicas de fita VHS sobrepostas suavemente -->
             <div class="absolute inset-0 vhs-scanlines opacity-50 z-10 pointer-events-none"></div>
 
@@ -425,7 +420,7 @@
                       class="bg-black/90 hover:bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white px-2.5 py-1 text-[11px] font-screenplay flex items-center gap-1.5 transition-colors"
                       title="Abrir no YouTube"
                     >
-                      <i class="fa-brands fa-youtube text-primary"></i>
+                      <iconify-icon icon="mdi:youtube" class="text-primary text-base"></iconify-icon>
                       <span>YouTube</span>
                     </a>
                     <button 
@@ -459,7 +454,7 @@
                     class="w-16 h-16 bg-black/85 border border-zinc-700 hover:border-white text-white flex items-center justify-center hover:bg-zinc-900 transition-all duration-150 shadow-2xl cursor-pointer"
                     title="Reproduzir no monitor"
                   >
-                    <i class="fa-solid fa-play text-xl ml-1 text-white"></i>
+                    <iconify-icon icon="material-symbols:play-arrow" class="text-2xl text-white ml-0.5"></iconify-icon>
                   </button>
                 </div>
 
@@ -479,14 +474,14 @@
                 class="absolute left-4 z-20 w-10 h-10 bg-black/80 hover:bg-primary text-white border border-zinc-700 flex items-center justify-center transition-colors cursor-pointer"
                 title="Cena anterior"
               >
-                <i class="fa-solid fa-chevron-left text-sm"></i>
+                <iconify-icon icon="material-symbols:chevron-left" class="text-xl"></iconify-icon>
               </button>
               <button 
                 @click="nextProject"
                 class="absolute right-4 z-20 w-10 h-10 bg-black/80 hover:bg-primary text-white border border-zinc-700 flex items-center justify-center transition-colors cursor-pointer"
                 title="Próxima cena"
               >
-                <i class="fa-solid fa-chevron-right text-sm"></i>
+                <iconify-icon icon="material-symbols:chevron-right" class="text-xl"></iconify-icon>
               </button>
             </div>
 
@@ -519,9 +514,12 @@
           <div 
             v-else-if="activeTab === 'sobre'" 
             key="sobre" 
-            class="w-full h-full bg-[#0a0a0c] text-zinc-300 p-6 lg:p-12 overflow-y-auto flex items-center justify-center border border-zinc-900 font-screenplay select-none"
+            class="w-full h-full relative overflow-hidden bg-[#0a0a0c] text-zinc-300 p-6 lg:p-12 flex items-center justify-center border border-zinc-900 font-screenplay select-none"
           >
-            <div class="max-w-2xl w-full mx-auto py-4">
+            <!-- Granulação analógica de película viva nos créditos -->
+            <div class="film-grain"></div>
+
+            <div class="max-w-2xl w-full mx-auto py-4 relative z-20">
               <!-- Lista Clássica de Créditos -->
               <div class="space-y-4 text-xs sm:text-sm">
                 <div 
@@ -558,77 +556,83 @@
                   <!-- Telefone / WhatsApp -->
                   <div class="flex items-center justify-between bg-black border border-zinc-800 px-3 py-2">
                     <div class="flex items-center gap-2 truncate">
-                      <i class="fa-brands fa-whatsapp text-primary text-sm shrink-0"></i>
+                      <iconify-icon icon="mdi:whatsapp" class="text-primary text-base shrink-0"></iconify-icon>
                       <span class="text-zinc-200 truncate">+55 31 99527-1426</span>
                     </div>
                     <button 
                       type="button"
                       @click="copyToClipboard('+5531995271426', 'phone')"
-                      class="text-zinc-400 hover:text-primary transition-colors text-xs ml-2 shrink-0 cursor-pointer p-1"
+                      class="text-zinc-400 hover:text-primary transition-colors text-xs ml-2 shrink-0 cursor-pointer p-1 flex items-center gap-1"
                       :title="copiedField === 'phone' ? 'Copiado!' : 'Copiar telefone'"
                     >
-                      <i :class="copiedField === 'phone' ? 'fa-solid fa-check text-green-400' : 'fa-regular fa-copy'"></i>
-                      <span class="text-[10px] ml-1 font-screenplay">{{ copiedField === 'phone' ? 'Copiado' : 'Copiar' }}</span>
+                      <iconify-icon :icon="copiedField === 'phone' ? 'material-symbols:check' : 'material-symbols:content-copy-outline'" :class="copiedField === 'phone' ? 'text-green-400 text-sm' : 'text-sm'"></iconify-icon>
+                      <span class="text-[10px] font-screenplay">{{ copiedField === 'phone' ? 'Copiado' : 'Copiar' }}</span>
                     </button>
                   </div>
 
                   <!-- E-mail -->
                   <div class="flex items-center justify-between bg-black border border-zinc-800 px-3 py-2">
                     <div class="flex items-center gap-2 truncate">
-                      <i class="fa-regular fa-envelope text-primary text-sm shrink-0"></i>
+                      <iconify-icon icon="mdi:email-outline" class="text-primary text-base shrink-0"></iconify-icon>
                       <span class="text-zinc-200 truncate">jeferson.i.silva@gmail.com</span>
                     </div>
                     <button 
                       type="button"
                       @click="copyToClipboard('jeferson.i.silva@gmail.com', 'email')"
-                      class="text-zinc-400 hover:text-primary transition-colors text-xs ml-2 shrink-0 cursor-pointer p-1"
+                      class="text-zinc-400 hover:text-primary transition-colors text-xs ml-2 shrink-0 cursor-pointer p-1 flex items-center gap-1"
                       :title="copiedField === 'email' ? 'Copiado!' : 'Copiar e-mail'"
                     >
-                      <i :class="copiedField === 'email' ? 'fa-solid fa-check text-green-400' : 'fa-regular fa-copy'"></i>
-                      <span class="text-[10px] ml-1 font-screenplay">{{ copiedField === 'email' ? 'Copiado' : 'Copiar' }}</span>
+                      <iconify-icon :icon="copiedField === 'email' ? 'material-symbols:check' : 'material-symbols:content-copy-outline'" :class="copiedField === 'email' ? 'text-green-400 text-sm' : 'text-sm'"></iconify-icon>
+                      <span class="text-[10px] font-screenplay">{{ copiedField === 'email' ? 'Copiado' : 'Copiar' }}</span>
                     </button>
                   </div>
                 </div>
               </div>
 
               <form @submit.prevent="handleSubmit" class="space-y-4">
-                <div>
-                  <label class="block text-xs uppercase text-zinc-400 mb-1">Seu Nome / Produtora *</label>
+                <div class="form-control w-full">
+                  <label class="label py-1">
+                    <span class="label-text text-xs uppercase text-zinc-400">Seu Nome / Produtora *</span>
+                  </label>
                   <input 
                     type="text" 
                     v-model="form.name" 
                     required
                     placeholder="Nome ou empresa"
-                    class="w-full bg-black border border-zinc-700 px-3 py-2 text-white text-xs focus:border-primary focus:outline-none"
+                    class="input input-bordered input-sm sm:input-md w-full bg-black border-zinc-700 text-white text-xs focus:border-primary focus:outline-none"
                   />
                 </div>
 
-                <div>
-                  <label class="block text-xs uppercase text-zinc-400 mb-1">E-mail de Contato (opcional)</label>
+                <div class="form-control w-full">
+                  <label class="label py-1">
+                    <span class="label-text text-xs uppercase text-zinc-400">E-mail de Contato (opcional)</span>
+                  </label>
                   <input 
                     type="email" 
                     v-model="form.email" 
                     placeholder="seuemail@exemplo.com"
-                    class="w-full bg-black border border-zinc-700 px-3 py-2 text-white text-xs focus:border-primary focus:outline-none"
+                    class="input input-bordered input-sm sm:input-md w-full bg-black border-zinc-700 text-white text-xs focus:border-primary focus:outline-none"
                   />
                 </div>
 
-                <div>
-                  <label class="block text-xs uppercase text-zinc-400 mb-1">Mensagem sobre o Projeto *</label>
+                <div class="form-control w-full">
+                  <label class="label py-1">
+                    <span class="label-text text-xs uppercase text-zinc-400">Mensagem sobre o Projeto *</span>
+                  </label>
                   <textarea 
                     v-model="form.message" 
                     rows="3" 
                     required
                     placeholder="Descreva o projeto (curta, clipe, redes sociais, prazos)..."
-                    class="w-full bg-black border border-zinc-700 px-3 py-2 text-white text-xs focus:border-primary focus:outline-none"
+                    class="textarea textarea-bordered w-full bg-black border-zinc-700 text-white text-xs focus:border-primary focus:outline-none"
                   ></textarea>
                 </div>
 
                 <button 
                   type="submit" 
-                  class="w-full bg-primary hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider py-3 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  class="btn btn-primary w-full text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <i class="fa-brands fa-whatsapp text-white text-base"></i>
+                  <iconify-icon icon="mdi:whatsapp" class="text-white text-lg"></iconify-icon>
                   <span>Falar Diretamente no WhatsApp</span>
                 </button>
               </form>
@@ -674,6 +678,9 @@
         
         <!-- SLIDE 1: ABERTURA / TÍTULO DE FILME (9:16) -->
         <div class="mobile-feed-item relative w-full flex flex-col justify-center items-center p-6 bg-black text-center select-none overflow-hidden">
+          <!-- Granulação analógica de película viva nos títulos -->
+          <div class="film-grain"></div>
+
           <!-- Scanlines VHS analógicas -->
           <div class="absolute inset-0 vhs-scanlines opacity-40 z-10 pointer-events-none"></div>
 
@@ -708,11 +715,14 @@
         </div>
 
         <!-- SLIDE 2: SOBRE (CRÉDITOS TÉCNICOS ADAPTADOS PARA 9:16) -->
-        <div class="mobile-feed-item relative w-full flex flex-col justify-center items-center p-6 bg-[#0a0a0c] text-zinc-300 font-screenplay select-none overflow-y-auto">
-          <div class="w-full max-w-sm mx-auto space-y-6 my-auto pt-10 pb-16">
+        <div class="mobile-feed-item relative w-full flex flex-col justify-center items-center px-6 py-4 bg-[#0a0a0c] text-zinc-300 font-screenplay select-none overflow-hidden">
+          <!-- Granulação analógica de película viva nos créditos -->
+          <div class="film-grain"></div>
+
+          <div class="w-full max-w-sm mx-auto space-y-4 my-auto relative z-20">
             
             <!-- Lista de Créditos Consumindo scope.credits Sem Linhas -->
-            <div class="space-y-3 text-xs">
+            <div class="space-y-2 text-xs">
               <div 
                 v-for="(c, i) in credits" 
                 :key="i"
@@ -766,7 +776,7 @@
                 rel="noopener noreferrer"
                 class="text-zinc-400 hover:text-primary flex items-center gap-1.5"
               >
-                <i class="fa-brands fa-youtube text-primary text-sm"></i>
+                <iconify-icon icon="mdi:youtube" class="text-primary text-sm"></iconify-icon>
                 <span>Abrir no YouTube</span>
               </a>
               <span class="text-zinc-500 font-mono">{{ item.year }}</span>
@@ -794,7 +804,7 @@
                 class="w-16 h-16 bg-black/80 border border-zinc-700 hover:border-white text-white flex items-center justify-center hover:bg-zinc-900 transition-colors cursor-pointer shadow-2xl"
                 title="Assistir agora"
               >
-                <i class="fa-solid fa-play text-xl ml-1"></i>
+                <iconify-icon icon="material-symbols:play-arrow" class="text-2xl text-white ml-0.5"></iconify-icon>
               </button>
             </div>
 
@@ -821,7 +831,7 @@
             <div class="space-y-2 pt-1 font-mono text-xs">
               <div class="flex items-center justify-between bg-black border border-zinc-800 px-3 py-2">
                 <div class="flex items-center gap-2 truncate">
-                  <i class="fa-brands fa-whatsapp text-primary text-sm shrink-0"></i>
+                  <iconify-icon icon="mdi:whatsapp" class="text-primary text-sm shrink-0"></iconify-icon>
                   <span class="text-zinc-200 truncate text-[11px]">+55 31 99527-1426</span>
                 </div>
                 <button 
@@ -829,14 +839,14 @@
                   @click="copyToClipboard('+5531995271426', 'phone_m')"
                   class="text-zinc-400 hover:text-primary transition-colors text-xs shrink-0 cursor-pointer p-1"
                 >
-                  <i :class="copiedField === 'phone_m' ? 'fa-solid fa-check text-green-400' : 'fa-regular fa-copy'"></i>
+                  <iconify-icon :icon="copiedField === 'phone_m' ? 'material-symbols:check' : 'material-symbols:content-copy-outline'" :class="copiedField === 'phone_m' ? 'text-green-400 text-sm' : 'text-sm'"></iconify-icon>
                   <span class="text-[10px] ml-1 font-screenplay">{{ copiedField === 'phone_m' ? 'Copiado' : 'Copiar' }}</span>
                 </button>
               </div>
 
               <div class="flex items-center justify-between bg-black border border-zinc-800 px-3 py-2">
                 <div class="flex items-center gap-2 truncate">
-                  <i class="fa-regular fa-envelope text-primary text-sm shrink-0"></i>
+                  <iconify-icon icon="mdi:email-outline" class="text-primary text-sm shrink-0"></iconify-icon>
                   <span class="text-zinc-200 truncate text-[11px]">jeferson.i.silva@gmail.com</span>
                 </div>
                 <button 
@@ -844,7 +854,7 @@
                   @click="copyToClipboard('jeferson.i.silva@gmail.com', 'email_m')"
                   class="text-zinc-400 hover:text-primary transition-colors text-xs shrink-0 cursor-pointer p-1"
                 >
-                  <i :class="copiedField === 'email_m' ? 'fa-solid fa-check text-green-400' : 'fa-regular fa-copy'"></i>
+                  <iconify-icon :icon="copiedField === 'email_m' ? 'material-symbols:check' : 'material-symbols:content-copy-outline'" :class="copiedField === 'email_m' ? 'text-green-400 text-sm' : 'text-sm'"></iconify-icon>
                   <span class="text-[10px] ml-1 font-screenplay">{{ copiedField === 'email_m' ? 'Copiado' : 'Copiar' }}</span>
                 </button>
               </div>
@@ -856,30 +866,32 @@
                 v-model="form.name" 
                 required
                 placeholder="Seu Nome / Produtora"
-                class="w-full bg-black border border-zinc-700 px-3 py-2.5 text-white text-xs focus:border-primary focus:outline-none"
+                class="input input-bordered input-sm w-full bg-black border-zinc-700 text-white text-xs focus:border-primary focus:outline-none"
               />
               <input 
                 type="email" 
                 v-model="form.email" 
                 placeholder="Seu E-mail (opcional)"
-                class="w-full bg-black border border-zinc-700 px-3 py-2.5 text-white text-xs focus:border-primary focus:outline-none"
+                class="input input-bordered input-sm w-full bg-black border-zinc-700 text-white text-xs focus:border-primary focus:outline-none"
               />
               <textarea 
                 v-model="form.message" 
                 rows="3" 
                 required
                 placeholder="Mensagem sobre o projeto..."
-                class="w-full bg-black border border-zinc-700 px-3 py-2.5 text-white text-xs focus:border-primary focus:outline-none"
+                class="textarea textarea-bordered w-full bg-black border-zinc-700 text-white text-xs focus:border-primary focus:outline-none"
               ></textarea>
 
               <button 
                 type="submit" 
-                class="w-full bg-primary hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider py-3 flex items-center justify-center gap-2 cursor-pointer"
+                class="btn btn-primary w-full text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
               >
-                <i class="fa-brands fa-whatsapp text-white text-base"></i>
+                <iconify-icon icon="mdi:whatsapp" class="text-white text-base"></iconify-icon>
                 <span>Enviar pelo WhatsApp</span>
               </button>
             </form>
+          </div>
+        </div>
           </div>
         </div>
 
