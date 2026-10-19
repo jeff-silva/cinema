@@ -724,49 +724,93 @@
           </div>
         </div>
 
-        <!-- SLIDES DOS PROJETOS (CADA PROJETO É UMA CENA VERTICAL) -->
+        <!-- SLIDES DOS PROJETOS (CADA PROJETO É UMA CENA VERTICAL COM REPRODUÇÃO DIRETA NO SLIDE) -->
         <div 
           v-for="(item, idx) in projects" 
           :key="item.id"
-          class="mobile-feed-item relative w-full flex flex-col justify-between p-6 bg-cover bg-center"
-          :style="`background-image: url('${item.image}')`"
+          class="mobile-feed-item relative w-full flex flex-col justify-between p-6 bg-cover bg-center overflow-hidden"
+          :style="playingMobileId === item.id ? 'background-color: #000' : `background-image: url('${item.image}')`"
         >
-          <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/40"></div>
+          <!-- Se estiver em reprodução: Iframe do YouTube Direto no Slide 9:16 -->
+          <div v-if="playingMobileId === item.id" class="absolute inset-0 z-20 bg-black flex flex-col justify-between">
+            <!-- Barra Superior do Vídeo em Reprodução -->
+            <div class="p-4 pt-12 bg-gradient-to-b from-black via-black/80 to-transparent flex items-center justify-between text-xs font-screenplay z-30">
+              <span class="text-white font-bold truncate max-w-[65%]">{{ item.title }}</span>
+              <button 
+                @click="playingMobileId = null"
+                class="bg-black/90 border border-zinc-700 text-zinc-300 hover:text-white px-2.5 py-1 text-[11px] cursor-pointer"
+              >
+                [ Fechar × ]
+              </button>
+            </div>
 
-          <!-- Topo do Slide -->
-          <div class="relative z-10 pt-12 flex justify-between items-center text-[10px] font-screenplay">
-            <span class="bg-black/80 border border-zinc-800 px-2.5 py-1 text-primary font-bold">
-              CENA 0{{ idx + 1 }}
-            </span>
-            <span class="bg-black/80 border border-zinc-800 px-2.5 py-1 text-zinc-400 font-mono">
-              {{ item.duration }}
-            </span>
-          </div>
+            <!-- Iframe Centralizado -->
+            <div class="flex-1 w-full flex items-center justify-center bg-black">
+              <iframe 
+                :src="`https://www.youtube.com/embed/${item.youtubeId}?autoplay=1&rel=0`" 
+                :title="item.title"
+                class="w-full aspect-video border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+              ></iframe>
+            </div>
 
-          <!-- Centro: Botão Play de Cinema -->
-          <div class="relative z-10 flex items-center justify-center">
-            <button 
-              @click="openModal(item)"
-              class="w-16 h-16 bg-black/80 border-2 border-primary text-white flex items-center justify-center"
-            >
-              <i class="fa-solid fa-play text-xl ml-1"></i>
-            </button>
-          </div>
-
-          <!-- Rodapé do Slide -->
-          <div class="relative z-10 pb-16 space-y-2 font-screenplay">
-            <span class="text-primary text-[10px] uppercase tracking-wider block font-bold">
-              {{ item.categoryLabel }} • {{ item.year }}
-            </span>
-            <h3 class="text-xl font-bold uppercase text-white">{{ item.title }}</h3>
-            <p class="text-zinc-300 text-xs line-clamp-2 leading-relaxed">
-              {{ item.description }}
-            </p>
-            <div class="flex items-center gap-2 pt-1 font-mono text-[10px] text-zinc-400">
-              <span class="border border-zinc-700 bg-black/80 px-2 py-0.5">{{ item.software }}</span>
-              <span class="border border-zinc-700 bg-black/80 px-2 py-0.5">{{ item.format }}</span>
+            <!-- Barra Inferior com Link Externo -->
+            <div class="p-4 bg-gradient-to-t from-black via-black/80 to-transparent flex items-center justify-between text-[11px] font-screenplay z-30">
+              <a 
+                :href="`https://www.youtube.com/watch?v=${item.youtubeId}`" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                class="text-zinc-400 hover:text-primary flex items-center gap-1.5"
+              >
+                <i class="fa-brands fa-youtube text-primary text-sm"></i>
+                <span>Abrir no YouTube</span>
+              </a>
+              <span class="text-zinc-500 font-mono">{{ item.duration }}</span>
             </div>
           </div>
+
+          <!-- Se NÃO estiver em reprodução: Layout Visual de Still com Botão Play -->
+          <template v-else>
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/40"></div>
+
+            <!-- Topo do Slide -->
+            <div class="relative z-10 pt-12 flex justify-between items-center text-[10px] font-screenplay">
+              <span class="bg-black/80 border border-zinc-800 px-2.5 py-1 text-primary font-bold">
+                CENA 0{{ idx + 1 }}
+              </span>
+              <span class="bg-black/80 border border-zinc-800 px-2.5 py-1 text-zinc-400 font-mono">
+                {{ item.duration }}
+              </span>
+            </div>
+
+            <!-- Centro: Botão Play de Cinema Direto -->
+            <div class="relative z-10 flex items-center justify-center">
+              <button 
+                @click="playingMobileId = item.id"
+                class="w-16 h-16 bg-black/80 border-2 border-primary text-white flex items-center justify-center hover:bg-primary transition-colors cursor-pointer shadow-2xl"
+                title="Assistir agora"
+              >
+                <i class="fa-solid fa-play text-xl ml-1"></i>
+              </button>
+            </div>
+
+            <!-- Rodapé do Slide -->
+            <div class="relative z-10 pb-16 space-y-2 font-screenplay">
+              <span class="text-primary text-[10px] uppercase tracking-wider block font-bold">
+                {{ item.categoryLabel }} • {{ item.year }}
+              </span>
+              <h3 class="text-xl font-bold uppercase text-white">{{ item.title }}</h3>
+              <p class="text-zinc-300 text-xs line-clamp-2 leading-relaxed">
+                {{ item.description }}
+              </p>
+              <div class="flex items-center gap-2 pt-1 font-mono text-[10px] text-zinc-400">
+                <span class="border border-zinc-700 bg-black/80 px-2 py-0.5">{{ item.software }}</span>
+                <span class="border border-zinc-700 bg-black/80 px-2 py-0.5">{{ item.format }}</span>
+              </div>
+            </div>
+          </template>
         </div>
 
         <!-- SLIDE FINAL: CONTATO NO MOBILE -->
@@ -847,88 +891,6 @@
       </div>
 
     </div>
-
-    <!-- MODAL DE VISUALIZAÇÃO DE PROJETO (DAISYUI DIALOG) -->
-    <dialog id="project_modal" class="modal bg-black/90">
-      <div v-if="selectedProject" class="modal-box max-w-2xl w-full p-0 bg-[#121316] border border-zinc-700 font-screenplay">
-        
-        <div class="px-5 py-3 bg-black border-b border-zinc-800 flex items-center justify-between text-xs">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 bg-primary animate-pulse"></span>
-            <span class="text-white font-bold">{{ selectedProject.title }}</span>
-          </div>
-          <form method="dialog">
-            <button @click="closeModal" class="text-zinc-400 hover:text-white text-sm">
-              [ Fechar ]
-            </button>
-          </form>
-        </div>
-
-        <div class="relative aspect-video bg-black">
-          <iframe 
-            v-if="selectedProject.youtubeId"
-            :src="`https://www.youtube.com/embed/${selectedProject.youtubeId}?autoplay=1&rel=0`" 
-            :title="selectedProject.title"
-            class="w-full h-full border-0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen
-          ></iframe>
-          <div v-else class="relative w-full h-full">
-            <img 
-              :src="selectedProject.image" 
-              :alt="selectedProject.title"
-              class="w-full h-full object-cover"
-            />
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="w-14 h-14 bg-black/80 border border-primary text-white flex items-center justify-center">
-                <i class="fa-solid fa-play text-lg ml-1"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="p-6 space-y-4">
-          <div>
-            <span class="text-primary text-[10px] font-bold block uppercase">{{ selectedProject.categoryLabel }} • {{ selectedProject.year }}</span>
-            <h3 class="text-xl font-bold text-white uppercase mt-0.5">{{ selectedProject.title }}</h3>
-          </div>
-
-          <p class="text-zinc-300 text-xs sm:text-sm leading-relaxed">
-            {{ selectedProject.description }}
-          </p>
-
-          <div class="grid grid-cols-2 gap-3 pt-3 border-t border-zinc-800 font-mono text-[10px] text-zinc-400">
-            <div>SOFTWARE: <strong class="text-white">{{ selectedProject.software }}</strong></div>
-            <div>FORMATO: <strong class="text-white">{{ selectedProject.format }}</strong></div>
-          </div>
-        </div>
-
-        <div class="px-6 py-3 bg-black border-t border-zinc-800 flex items-center justify-between">
-          <a 
-            v-if="selectedProject.youtubeId"
-            :href="`https://www.youtube.com/watch?v=${selectedProject.youtubeId}`" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            class="text-xs text-zinc-400 hover:text-primary flex items-center gap-1.5 transition-colors"
-          >
-            <i class="fa-brands fa-youtube text-primary text-sm"></i>
-            <span>[ Abrir no YouTube ]</span>
-          </a>
-          <div v-else></div>
-
-          <form method="dialog">
-            <button @click="closeModal" class="btn btn-sm btn-outline border-zinc-700 text-zinc-300 hover:text-white font-screenplay text-xs">
-              Fechar Cena
-            </button>
-          </form>
-        </div>
-
-      </div>
-      <form method="dialog" class="modal-backdrop">
-        <button @click="closeModal">fechar</button>
-      </form>
-    </dialog>
 
   </div>
 
@@ -1101,18 +1063,8 @@
             scope.currentProjectIndex = (scope.currentProjectIndex - 1 + scope.projects.length) % scope.projects.length;
           },
 
-          // Modal (utilizado no Mobile para tela cheia)
-          selectedProject: null,
-          openModal(item) {
-            scope.selectedProject = item;
-            const modal = document.getElementById('project_modal');
-            if (modal) modal.showModal();
-          },
-          closeModal() {
-            scope.selectedProject = null;
-            const modal = document.getElementById('project_modal');
-            if (modal) modal.close();
-          },
+          // Controle de Reprodução Direta no Mobile (Scroll Feed)
+          playingMobileId: null,
 
           // Formulário de Contato -> WhatsApp
           form: {
